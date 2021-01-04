@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
+    <link rel="stylesheet" href="css/bubbles.css">
+    <style type="text/css">
+        body {
+            font-family: Dosis, sans-serif !important;
+            background: #FFFFFF url('images/uploads/slider-bg.jpg') left top repeat-y;
+            margin: 0;
+            /*height: 100vh;*/
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /*background-color: black;*/
+        }
+
+        nav#find {
+            position: absolute;
+            left: 50%;
+            bottom: 10%;
+        }
+
+        nav#find ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            left: -50%;
+        }
+
+        nav#find ul li {
+            color: #FFFFFF;
+            font-size: 16px;
+            border: 0.3em solid #233A50;
+            border-radius: 0.5em;
+            width: 12em;
+            height: 3em;
+            text-transform: uppercase;
+            font-weight: bold;
+
+            letter-spacing: 0.1em;
+            text-align: center;
+            line-height: 3em;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: 0.5s;
+            margin: 1em;
+        }
+
+        nav#find ul li span {
+            position: absolute;
+            width: 25%;
+            height: 100%;
+            background-color: #233A50;
+            transform: translateY(150%);
+            border-radius: 50%;
+            left: calc((var(--n) - 1) * 25%);
+            transition: 0.5s;
+            transition-delay: calc((var(--n) - 1) * 0.1s);
+            z-index: -1;
+        }
+
+        nav#find ul li:hover {
+            color: white;
+            cursor: pointer;
+        }
+
+        nav#find ul li:hover span {
+            transform: translateY(0) scale(2);
+        }
+
+        nav#find ul li span:nth-child(1) {
+            --n: 1;
+        }
+
+        nav#find ul li span:nth-child(2) {
+            --n: 2;
+        }
+
+        nav#find ul li span:nth-child(3) {
+            --n: 3;
+        }
+
+        nav#find ul li span:nth-child(4) {
+            --n: 4;
+        }
+
+        #logo {
+            position: absolute;
+            left: 50%;
+            top: 1%;
+            z-index: 2;
+        }
+
+        #logo-wrapper {
+            position: relative;
+            left: -50%;
+        }
+    </style>
+</head>
+<body>
+<div id="logo">
+    <div id="logo-wrapper">
+        <a href="index.html"><img class="logo" src="images/logo1.png" alt=""></a>
+    </div>
+</div>
+<div id="bubbles"></div>
+<nav id="find">
+    <ul>
+        <li id="findButton">
+            Next &gt;&gt;
+            <span></span><span></span><span></span><span></span>
+        </li>
+    </ul>
+</nav>
+<script type="text/javascript">
+    var categories = [];
+</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+<script src="js/bubbles.js"></script>
+<script type="text/javascript">
+    document.getElementById('findButton').onclick = function () {
+        if (categories.length>0) {
+            // may be replaced with POST method
+            let queryString = '?category=';
+            for (let i = 0; i < categories.length; i++) {
+                queryString += categories[i];
+                if (i < categories.length-1) {
+                    queryString += ','
+                }
+            }
+            location.href = 'slider.html' + queryString;
+        } else {
+            alert('You must choose at least 1 category');
+        }
+    };
+</script>
+</body>
+</html>
