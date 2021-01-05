@@ -4,11 +4,11 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
-    <link rel="stylesheet" href="../css/slider.css">
+    <link rel="stylesheet" href="css/slider.css">
     <style type="text/css">
         body {
             font-family: Dosis, sans-serif;
-            background: #FFFFFF url('../images/uploads/slider-bg.jpg') left top repeat-y;
+            background: #FFFFFF url('images/uploads/slider-bg.jpg') left top repeat-y;
             margin: 0;
             /*height: 100vh;*/
             display: flex;
@@ -138,8 +138,9 @@
         }
 
         .container {
+            width: 500px;
             position: absolute;
-            left: 40%;
+            left: 50%;
             top: 25%;
             z-index: 2;
             -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
@@ -149,45 +150,101 @@
             animation: fadein 2s;
         }
 
+        .container-wrapper {
+            position: relative;
+            left: -50%;
+        }
+
         #logo-wrapper {
             position: relative;
             left: -50%;
+        }
+
+        .button {
+            font-weight: bold;
+            font-family: Dosis, sans-serif;
+            background-color: #008CBA;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 0px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            float:left;
+            color: black;
+            border: 2px solid #008CBA;
+            border-right: 0px;
+        }
+
+        .button:hover {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        .button-first {
+            border-left: 2px solid #008CBA;
+            border-bottom-left-radius: 15px;
+            border-top-left-radius: 15px;
+        }
+
+        .button-last {
+            border-right: 2px solid #008CBA;
+            border-bottom-right-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        button:focus {outline:0;}
+
+        .selected {
+            background-color: #008CBA;
+            color: white;
         }
     </style>
 </head>
 <body>
 <div id="logo">
     <div id="logo-wrapper">
-        <a href="index.html"><img class="logo" src="../images/logo1.png" alt=""></a>
+        <a href="index.html"><img class="logo" src="images/logo1.png" alt=""></a>
     </div>
 </div>
-<h2 style="color:white; text-align:center; display:block">Movie length:</h2>
+<h2 style="color:white; text-align:center; display:block">Release year:</h2>
 <div class="container">
-    <div class="slider">
-        <div class="track"></div>
+    <div class="container-wrapper">
+    <button class="button button-first" id="pre">pre 80's</button>
+    <button class="button" id="old">80's-90's</button>
+    <button class="button" id="new">2000-today</button>
+    <button class="button button-last" id="all">all</button>
     </div>
-    <div class="output o0"> </div>
-    <div class="thumb t0"></div>
-
-    <div class="output o1"> </div>
-    <div class="thumb t1"></div>
 </div>
 <nav id="find">
     <ul>
         <li id="findButton">
-            Next &gt;&gt;
+            Finish &gt;&gt;
             <span></span><span></span><span></span><span></span>
         </li>
     </ul>
 </nav>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
-<script src="../js/slider.js"></script>
+<script src="js/slider2.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script type="text/javascript">
+
+    $( "button" ).click(function() {
+        $( "button" ).removeClass( "selected" );
+        $(this).addClass( "selected" );
+    });
+
     document.getElementById('findButton').onclick = function () {
-        if (typeof roundedLength !== 'undefined') {
+        if (document.getElementsByClassName("selected").length > 0) {
             var queryString = window.location.search;
-            queryString += "&movieLength="+roundedLength[0]+","+roundedLength[1];
-            location.href = 'slider2.html'+queryString;
+            var elementId = document.getElementsByClassName("selected")[0].id;
+            queryString += "&release=" + elementId;
+            location.href = 'index.html' + queryString;
+        }
+        else {
+            alert('You must choose release year');
         }
     };
 </script>
