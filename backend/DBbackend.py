@@ -105,20 +105,31 @@ class DBbackend:
         return cursor.fetchall()
 
     # ---------------- Queries ------------------
-    def recommendations(self):
+    def recommendations(self, min_len, max_len, start_year=MIN_YEAR, end_year=MAX_YEAR):
         pass
-#         query = f"\
-#         CREATE VIEW Relevant_Movies AS:\
-#         SELECT m.movie_ID AS movie_ID, m.movie_name AS name, g.genre AS genre,\
-#             SUM(ms.rotten_tomatoes, ms.metacritic, ms.imdb) / 3 AS popularity \
-#         FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms \
-#         WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID AND \
-#             EXTRACT(YEAR FROM m.released) BETWEEN start_year AND end_year \
-#             AND m.run_time BETWEEN min_len AND max_len AND m.movie_ID = ms.movie_ID \
-#             "
-# # add rest of query and deal with m.run_time above (transfer to minutes)
-#         iterator = self.execute_sql(query)
-#         return iterator
+        # query = f"\
+        # CREATE VIEW Relevant_Movies AS:\
+        # SELECT m.movie_ID AS movie_ID, m.movie_name AS name, g.genre AS genre,\
+        #     SUM(ms.rotten_tomatoes, ms.metacritic, ms.imdb) / 3 AS popularity \
+        # FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms \
+        # WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID AND \
+        #     EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year} \
+        #     AND (EXTRACT(HOUR FROM m.run_time)*60+EXTRACT(MINUTE FROM m.run_time))\
+        #         BETWEEN {min_len} AND {max_len} AND m.movie_ID = ms.movie_ID \
+        #     \
+        # SELECT rm_n.movie_ID, rm_n.title, rm_n.genre, rm_n.released, \
+        #     rm_n.run_time, rm_n.popularity \
+        # FROM( \
+        #     SELECT rm.movie_ID, rm.title, rm.genre, rm.released, \
+        #         rm.run_time, rm.popularity, ROW_NUMBER OVER(Partition BY rm.genre \
+        #         ORDER BY rm.popularity DESC) AS popularity_rank \
+        #     FROM Relevant_Movies AS rm \
+        #     ) rm_n \
+        # WHERE rm_n.popularity_rank <= 10 \
+        # ORDERED BY rm_n.genre, rm_n.popularity"
+        #
+        # iterator = self.execute_sql(query)
+        # return iterator
 
 
 # If user doesn't specifies user_genre - return all categories. Same with years
