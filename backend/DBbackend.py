@@ -10,7 +10,7 @@ class DBbackend:
     def __init__(self):
         try:
             self.cnx = mysql.connector.connect(user='DbMysql06', database='DbMysql06', password='DbMysql06',
-                                               host='127.0.0.1', port=3305)
+                                               host='mysqlsrv1.cs.tau.ac.il', port=3306)
             self.status = True
         except mysql.connector.Error as err:
             self.status = False
@@ -172,7 +172,7 @@ class DBbackend:
         # FROM Person p1, Person p2, Movies-Crew mc, Movies-Actors ma, Movies m,\
         #     Movies-Genres mg, Genres g \
         # WHERE p1.person_ID=mc.person_ID AND p2.person_ID=ma.person_ID AND \
-        #     mc.role = \“Director\” AND mc.movie_ID=m.movie_ID AND ma.movie_ID=m.movie_ID \
+        #     mc.role = \"Director\" AND mc.movie_ID=m.movie_ID AND ma.movie_ID=m.movie_ID \
         #     AND m.movie_ID = mg.movie_ID AND g.genre = {user_genre}\
         # GROUP BY p1.Person-ID, p1.First-name, p1.Last-name, p2.Person-ID, p2.First-\
         #     name, p2.Last-name\
@@ -208,7 +208,7 @@ class DBbackend:
         pass
         # query = f"\
         # CREATE VIEW Relevant_Movies AS: \
-        #     #(returns movies that have more than \“actors_number\” actors)\
+        #     #(returns movies that have more than \"actors_number\" actors)\
         #     SELECT m.movie_ID, COUNT(*) as num_of_actors\
         #     FROM Movies m, Movies_Actors ma\
         #     WHERE m.movie_ID = ma.movie_ID\
@@ -216,10 +216,10 @@ class DBbackend:
         #     HAVING num_of_actors >= {actors_number} \
         #         \
         # CREATE VIEW Relevant_Directors AS: \
-        #     #(returns top \“num_of_directors\” directors that produced movies with at least \“actors_number\” actors or more, and their total budget is at least \“budget\”) \
+        #     #(returns top \"num_of_directors\" directors that produced movies with at least \"actors_number\" actors or more, and their total budget is at least \"budget\") \
         #     SELECT mc.person_ID, SUM(m.budget) AS total_budget \
         #     FROM Movies_Crew mc, Relevant_Movies rm \
-        #     WHERE mc.role =\”Director\” AND mc.movie_ID = m.movie_ID \
+        #     WHERE mc.role =\"Director\" AND mc.movie_ID = m.movie_ID \
         #         AND m.movie_ID = rm.movie_ID \
         #     GROUP BY mc.person_ID \
         #     HAVING total_budget >= {budget} \
@@ -240,17 +240,17 @@ class DBbackend:
         pass
         # query = f"\
         # CREATE VIEW Relevant_Movies AS: \
-        #     #(returns movies that have more than \“actors_number\” actors)\
+        #     #(returns movies that have more than \"actors_number\" actors)\
         #     SELECT m.movie_ID, COUNT(*) as num_of_actors\
         #     FROM Movies m, Movies_Actors ma\
         #     WHERE m.movie_ID = ma.movie_ID\
         #     GROUP BY m.movie_ID\
         #     HAVING num_of_actors >= {actors_number} \
         #         \
-        # #(returns top \“num_of_directors\” directors that produced movies with at least \“actors_number\” actors or more, and their total budget is at least \“budget\”) \
+        # #(returns top \"num_of_directors\" directors that produced movies with at least \"actors_number\" actors or more, and their total budget is at least \"budget\") \
         # SELECT mc.person_ID, SUM(m.budget) AS total_budget \
         # FROM Movies_Crew mc, Relevant_Movies rm \
-        # WHERE mc.role =\”Director\” AND mc.movie_ID = m.movie_ID \
+        # WHERE mc.role =\"Director\" AND mc.movie_ID = m.movie_ID \
         #     AND m.movie_ID = rm.movie_ID \
         # GROUP BY mc.person_ID \
         # HAVING total_budget >= {budget} \

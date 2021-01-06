@@ -207,7 +207,7 @@ def is_valid_movie_length(movie_length):
 
 def is_valid_genre(genre):  # genres != None and ((is list and len(genres) > 0) or (is string and in DB))
     if genre is not None:
-        if (type(genre) is list and len(genre) > 0) or (isinstance(genre, str) and (genre,) in list_of_genres_db()):
+        if (type(genre) is list and len(genre) > 0) or (isinstance(genre, str) and genre in list_of_genres_db()):
             return True
     return False
 
@@ -216,9 +216,11 @@ def list_of_genres_db():
     db = DBbackend()
     sql = 'SELECT genre FROM Genres'
     res = db.execute_sql(sql)
-    return res
+    genres = [g[0] for g in res]
+    db.close()
+    return genres
 
 
 if __name__ == '__main__':
-    app.run(port="8888", debug=True)
+    app.run(port="40004", debug=False)
 
