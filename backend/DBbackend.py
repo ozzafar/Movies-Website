@@ -5,6 +5,7 @@ MIN_YEAR = 1900
 MAX_YEAR = 2020
 ALL = "*"
 
+
 class DBbackend:
     def __init__(self):
         try:
@@ -26,8 +27,10 @@ class DBbackend:
     def execute_sql(self, sql, values=None):
         cursor = self.cnx.cursor()  # get the cursor
         if values is None:
-            iterator = cursor.execute(sql)
-            return iterator
+            cursor.execute(sql)
+            # changed to fetching all rows and returning them because cursor.execute returns None
+            rows = cursor.fetchall()
+            return rows
         else:
             cursor.execute(sql, values)
             self.cnx.commit()
@@ -36,7 +39,7 @@ class DBbackend:
         cursor = self.cnx.cursor()  # get the cursor
         sql = "INSERT INTO Movies (movie_ID,title,released,run_time,plot,budget,revenue) VALUES (%s,%s,%s,%s,%s,%s,%s)"
         runtime = mv.runtime
-        if runtime != None:
+        if runtime is not None:
             runtime = '{:02d}:{:02d}'.format(*divmod(mv.runtime, 60))
         if runtime == '':
             runtime = None
