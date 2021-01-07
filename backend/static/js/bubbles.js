@@ -1,15 +1,15 @@
 
-
+/*
 var nodes = new vis.DataSet([
   {label: "Comedy"},
   {label: "Romantic"},
-  {label: "POLANI"},
   {label: "Action"},
   {label: "Horror"},
   {label: "Documentary"},
   {label: "Nature"},
   {label: "Drama"},
 ]);
+ */
 var edges = new vis.DataSet();
 
 var container = document.getElementById('bubbles');

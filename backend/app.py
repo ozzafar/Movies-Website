@@ -1,4 +1,6 @@
 from DBbackend import DBbackend
+import html
+from config import *
 from flask import Flask, render_template, request
 app = Flask(__name__)
 
@@ -11,7 +13,7 @@ def index():
     body = ''
     js1 = ''
     js2 = ''
-    genres = request.args.get('genre')
+    genres = request.args.get('category')
     if is_valid_genre(genres):
         movie_length = request.args.get('movieLength')
         if is_valid_movie_length(movie_length): # genres != None and (is list and len(genres) == 2
@@ -23,6 +25,14 @@ def index():
                 css = '        .container {\
             width: 500px !important;\
             left: 50% !important;\
+            position: absolute;\
+                top: 25%;\
+                z-index: 2;\
+                -webkit-animation: fadein 2s;\
+                -moz-animation: fadein 2s;\
+                -ms-animation: fadein 2s;\
+                -o-animation: fadein 2s;\
+                animation: fadein 2s;\
         }\
                 .container-wrapper {\
             position: relative;\
@@ -178,7 +188,7 @@ def index():
         filename = 'bubbles'
         body = '<div id="bubbles"></div>'
         js1 = '<script type="text/javascript">\
-    var categories = [];\
+    var categories = [];'+get_js_genres_list()+'\
 </script>'
         js2 = '<script type="text/javascript">\
     document.getElementById("findButton").onclick = function () {\
@@ -196,19 +206,36 @@ def index():
         }\
     };\
 </script>'
-    return render_template('intro.html', filename=filename, css=css, body=body, js1=js1, js2=js2)
+
+    css = html.unescape(css)
+    body = html.unescape(body)
+    js1 = html.unescape(js1)
+    js2 = html.unescape(js2)
+    csspath = 'static/css/'+filename+'.css'
+    jspath = 'static/js/'+filename+'.js'
+    return render_template('intro.html', csspath=csspath, css=css, body=body, jspath=jspath, js1=js1, js2=js2)
 
 
 def is_valid_movie_length(movie_length):
-    if movie_length[0] >= 0 and movie_length[1] <= 240:
-        return True
+    if type(movie_length) is str:
+        movie_length_list = movie_length.split(',')
+        if len(movie_length_list) == 2:
+            if int(movie_length_list[0]) >= 0 and int(movie_length_list[1]) <= 210:
+                return True
     return False
 
 
 def is_valid_genre(genre):  # genres != None and ((is list and len(genres) > 0) or (is string and in DB))
-    if genre is not None:
-        if (type(genre) is list and len(genre) > 0) or (isinstance(genre, str) and genre in list_of_genres_db()):
-            return True
+    if type(genre) is str:
+        genre_list = genre.split(',')
+        if len(genre_list) > 0:
+            all_in_db = True
+            genres_db = list_of_genres_db()
+            for g in genre_list:
+                if g not in genres_db:
+                    all_in_db = False
+                    break
+            return all_in_db
     return False
 
 
@@ -221,6 +248,19 @@ def list_of_genres_db():
     return genres
 
 
+def get_js_genres_list():
+    string = '\
+    var nodes = new vis.DataSet(['
+    for g in list_of_genres_db():
+        string += '{label: "'+g+'"},'
+    string += ']);\
+'
+    return string
+
+
 if __name__ == '__main__':
-    app.run(port="40004", debug=False)
+    host = LOCALHOST
+    if REMOTE:
+        host = WEBSERVER
+    app.run(port=PORT, debug=DEBUG, host=host)
 

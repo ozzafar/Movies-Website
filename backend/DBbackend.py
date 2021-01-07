@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import errorcode
+from config import *
 
 MIN_YEAR = 1900
 MAX_YEAR = 2020
@@ -9,8 +10,13 @@ ALL = "*"
 class DBbackend:
     def __init__(self):
         try:
+            host = '127.0.0.1'
+            port = 3305
+            if REMOTE:
+                host = DB_HOST
+                port = DB_PORT
             self.cnx = mysql.connector.connect(user='DbMysql06', database='DbMysql06', password='DbMysql06',
-                                               host='mysqlsrv1.cs.tau.ac.il', port=3306)
+                                               host=host, port=port)
             self.status = True
         except mysql.connector.Error as err:
             self.status = False

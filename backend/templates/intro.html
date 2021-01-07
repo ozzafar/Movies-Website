@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Find Me A Movie - By Mor, Deniel, Oz, Dvir</title>
     <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
-    <link rel="stylesheet" href="{{url_for('static', filename='css/{{filename}}.css')}}">
+    <link rel="stylesheet" href="{{csspath}}">
     <style type="text/css">
         body {
             font-family: Dosis, sans-serif !important;
@@ -98,16 +99,16 @@
             position: relative;
             left: -50%;
         }
-        {{css}}
+        {{css|safe}}
     </style>
 </head>
 <body>
 <div id="logo">
     <div id="logo-wrapper">
-        <a href="index.html"><img class="logo" src="images/logo1.png" alt=""></a>
+        <a href="/"><img class="logo" src="{{url_for('static', filename='images/logo1.png')}}" alt=""></a>
     </div>
 </div>
-{{body}}
+{{body|safe}}
 <nav id="find">
     <ul>
         <li id="findButton">
@@ -116,9 +117,9 @@
         </li>
     </ul>
 </nav>
-{{js1}}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
-<script src="js/{{filename}}.js"></script>
-{{js2}}
+{{js1|safe}}
+<script src="{{jspath}}"></script>
+{{js2|safe}}
 </body>
 </html>
