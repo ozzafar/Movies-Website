@@ -200,8 +200,8 @@ class DBbackend:
         # GROUP BY rmn.movie_ID, rmn.title, rmn.released, rmn.run_time, rmn.popularity
         # ORDER BY rmn.popularity DESC
 
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     # If user doesn't specifies user_genre - return all categories. Same with years
     def popular_movies(self, user_genre, start_year=MIN_YEAR, end_year=MAX_YEAR):
@@ -215,8 +215,8 @@ class DBbackend:
         #     AND mg.genre_ID = g.genre_ID AND g.genre = {user_genre} AND m.rated_ID = r.rated_ID
         # ORDER BY popularity DESC"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     def popular_actors(self, movie_score, start_year=MIN_YEAR, end_year=MAX_YEAR):
         pass
@@ -232,8 +232,8 @@ class DBbackend:
         # GROUP BY p.person_ID, p.first_name, p.last_name
         # ORDER BY amount_of_movies DESC"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     def director_actor_coupling(self, number_of_movies, user_genres):
         pass
@@ -250,8 +250,8 @@ class DBbackend:
         # HAVING co_operations >= {number_of_movies}
         # ORDER BY co_operations DESC
 
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     def directors_movies_budget(self, budget, num_of_directors=10, actors_number=1):
         pass
@@ -270,8 +270,8 @@ class DBbackend:
         # WHERE t.total_budget>={budget}
         # ORDER BY director_first_name, director_last_name"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     # TODO - delete. no need in this query
     # return Director-total_budget (total_budget is the total_budget of movies made by the director, each having more that "num_of_actors" played in)
@@ -289,8 +289,8 @@ class DBbackend:
         # ORDER BY total_budget DESC
         # LIMIT {num_of_directors}"
 
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     # user can ignore awards
     def countries_movies(self, movie_budget, movie_awards=0):
@@ -311,8 +311,8 @@ class DBbackend:
         # WHERE cmn.ranked_budget <= 10 # for each country return only 10 countries\
         # ORDER BY cmn.country, cmn.budget, cmn.awards"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     def actors_movies_awards(self, num_of_actors, start_year=MIN_YEAR):
         pass
@@ -328,8 +328,8 @@ class DBbackend:
         # ORDER BY total_awards DESC, number_of_movies_played DESC
         # LIMIT {num_of_actors}"
 
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
         # ------ Full-Text Queries --------
 
@@ -346,8 +346,8 @@ class DBbackend:
         # FROM Movies m, Rated r \
         # WHERE m.rated_ID = r.rated_ID AND Match(title) AGAINST(\"{string_to_search}\" IN BOOLEAN MODE)"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     def movies_with_string_in_plot(self, string_to_search, sub_string=False):
         pass
@@ -362,8 +362,8 @@ class DBbackend:
         # FROM Movies m, Rated r\
         # WHERE m.rated_ID = r.rated_ID AND Match(m.plot) AGAINST(\"{string_to_search}\" IN BOOLEAN MODE)"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     def movies_actors_with_string_in_name(self, string_to_search, sub_string=False):
             pass
@@ -380,8 +380,8 @@ class DBbackend:
         # GROUP BY m.movie_ID, m.title
         # ORDER BY num_of_actors DESC"
         #
-        # iterator = self.execute_sql(query)
-        # return iterator
+        # rows = self.execute_sql(query)
+        # return rows
 
     # ------------ Auxiliary Funcs --------------
 
