@@ -8,6 +8,8 @@ ALL = "*"
 
 
 class DBbackend:
+
+    # constructor
     def __init__(self):
         try:
             host = '127.0.0.1'
@@ -41,9 +43,11 @@ class DBbackend:
             cursor.execute(sql, values)
             self.cnx.commit()
 
+    # region INSERT
+
     def insert_movie(self, mv):
         cursor = self.cnx.cursor()  # get the cursor
-        sql = "INSERT INTO Movies (movie_ID,title,released,run_time,plot,budget,revenue) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        sql = "INSERT INTO Movies (movie_ID,title,released,run_time,plot,budget,revenue,poster_URL,trailer_URL) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         runtime = mv.runtime
         if runtime is not None:
             runtime = '{:02d}:{:02d}'.format(*divmod(mv.runtime, 60))
@@ -61,7 +65,17 @@ class DBbackend:
         release_date = mv.release_date
         if release_date == '':
             release_date = None
-        values = (mv.id, mv.title, release_date, runtime, overview, budget, revenue)
+        poster = mv.poster_path
+        if poster == '':
+            poster = None
+        trailer = mv.trailers
+        if trailer != None and "youtube" in trailer:
+            trailer = trailer["youtube"]
+            if len(trailer) > 0:
+                trailer = trailer[0]["source"]
+            else:
+                trailer = None
+        values = (mv.id, mv.title, release_date, runtime, overview, budget, revenue, poster, trailer)
         cursor.execute(sql, values)
         self.cnx.commit()
 
@@ -82,11 +96,6 @@ class DBbackend:
         values = (c,)
         self.execute_sql(sql, values)
 
-    def update_poster(self, url, id):
-        sql = "UPDATE Movies SET poster_URL=%s WHERE movie_ID = %s"
-        values = (url, id)
-        self.execute_sql(sql, values)
-
     def insert_movies_genres(self, m_id, g_id):
         sql = "INSERT INTO Movie_Genres (movie_ID,genre_ID) VALUES (%s,%s)"
         values = (m_id, g_id)
@@ -102,10 +111,53 @@ class DBbackend:
         values = (c,)
         self.execute_sql(sql, values)
 
-    def insert_actor(self, first, last, gender):
-        sql = "INSERT INTO Person (first_name,last_name,gender) VALUES (%s,%s,%s)"
-        values = (first, last, gender)
+    def insert_actor(self, first, last, gender, profile_path):
+        sql = "INSERT INTO Person (first_name,last_name,gender,picture_URL) VALUES (%s,%s,%s,%s)"
+        values = (first, last, gender, profile_path)
         self.execute_sql(sql, values)
+
+    def insert_country(self, c):
+        sql = "INSERT INTO Production_Countries (country) VALUES (%s)"
+        values = (c,)
+        self.execute_sql(sql, values)
+
+    def insert_movies_countries(self, m_id, c_id):
+        sql = "INSERT INTO Movie_Countries (movie_ID,prod_country_ID) VALUES (%s,%s)"
+        values = (m_id, c_id)
+        self.execute_sql(sql, values)
+
+    def insert_movies_actors(self, m_id, c_id, character):
+        sql = "INSERT INTO Movies_Actors (person_ID,movie_ID,figure) VALUES (%s,%s,%s)"
+        values = (c_id, m_id, character)
+        self.execute_sql(sql, values)
+
+    def insert_movies_crew(self, m_id, c_id, job):
+        sql = "INSERT INTO Movies_Crew (person_ID,movie_ID,role) VALUES (%s,%s,%s)"
+        values = (c_id, m_id, job)
+        self.execute_sql(sql, values)
+
+    def insert_score(self, m_id, imdb, rotten_tomatoes, metacritic, imdbVotes):
+        sql = "INSERT INTO Movie_Score (movie_ID,rotten_tomatoes,metacritic,imdb,imdbVotes) VALUES (%s,%s,%s,%s,%s)"
+        values = (m_id, rotten_tomatoes, metacritic, imdb, imdbVotes)
+        self.execute_sql(sql, values)
+
+    # endregion
+
+    # region UPDATE
+
+    def update_poster(self, url, id):
+        sql = "UPDATE Movies SET poster_URL=%s WHERE movie_ID = %s"
+        values = (url, id)
+        self.execute_sql(sql, values)
+
+    def update_movie(self, m_id, awards, rated):
+        sql = "UPDATE Movies SET awards=%s, rated_ID=%s WHERE movie_ID = %s"
+        values = (awards, rated, m_id)
+        self.execute_sql(sql, values)
+
+    # endregion
+
+    # region SELECT
 
     def get_movie_ids(self):
         cursor = self.cnx.cursor()  # get the cursor
@@ -113,7 +165,16 @@ class DBbackend:
         cursor.execute(sql)
         return cursor.fetchall()
 
-    # ---------------- Queries ------------------
+    def get_actors(self):
+        cursor = self.cnx.cursor()  # get the cursor
+        sql = "SELECT * FROM Person"
+        cursor.execute(sql)
+        return cursor.fetchall()
+
+     #endregion
+
+    # region Queries
+
     def recommendations(self, min_len, max_len, start_year=MIN_YEAR, end_year=MAX_YEAR):
         pass
         # query = f"\
@@ -323,3 +384,5 @@ class DBbackend:
         #
         # iterator = self.execute_sql(query)
         # return iterator
+
+    #endregion
