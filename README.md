@@ -12,4 +12,5 @@ How to run:
 9. python app.py
 
 Now you can press "ctrl+a" then "d" to detach the screen process (app.py would still run in background).
-For reattaching your screen type "screen -r"
+
+For reattaching your screen type "screen -r".
