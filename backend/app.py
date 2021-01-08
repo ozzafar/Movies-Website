@@ -24,7 +24,7 @@ def create_body():
 							<a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
 						</div>
 						<div class="mv-item-infor">
-							<h6><a """ + "href=moviesingle?movie=" + id + "&poster=" + poster_url + ">" + name + """ </a></h6>
+							<h6><a """ + "href=moviesingle?movie=" + id + ">" + name + """ </a></h6>
 							<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
 						</div>
 					</div>""")
@@ -48,6 +48,8 @@ def moviegrid():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
+    if DEBUG:
+        return render_template('index.html')
     filename = ''
     css = ''
     body = ''
