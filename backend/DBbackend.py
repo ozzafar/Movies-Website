@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from config import *
 
+
 MIN_YEAR = 1900
 MAX_YEAR = 2020
 ALL = "*"
@@ -255,7 +256,7 @@ class DBbackend:
 
         # query = f"\
         # SELECT director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, actor_last_name,
-        # SUM(co_operations) AS co_operations, GROUP_CONCAT(genre) AS genres
+        # SUM(co_operations) AS co_operations, GROUP_CONCAT(genre SEPERATOR \", \") AS genres
         # FROM Director_Actor_Genre_NumOfMovies dagm
         # WHERE ({user_genres_string})
         # GROUP BY director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, actor_last_name
