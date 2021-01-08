@@ -264,3 +264,28 @@ if __name__ == '__main__':
         host = WEBSERVER
     app.run(port=PORT, debug=DEBUG, host=host)
 
+@app.route('/moviegrid', methods=['GET'])
+def moviegrid():
+    body = create_body()
+    return render_template('/moviegrid.html', body=body)
+
+def create_body():
+    db = DBbackend()
+    movies = db.get_movies()
+    body = ""
+    for i in range(20):
+        if movies[i][9] != None:
+            body += ("""
+            		<div class="movie-item-style-2 movie-item-style-1">
+						<img src= """ + "https://image.tmdb.org/t/p/w1280" + movies[i][9] + """ alt="">
+						<div class="hvr-inner">
+							<a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+						</div>
+						<div class="mv-item-infor">
+							<h6><a href="#">oblivion</a></h6>
+							<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
+						</div>
+					</div>""")
+    return body
+
+

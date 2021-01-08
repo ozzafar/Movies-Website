@@ -171,7 +171,13 @@ class DBbackend:
         cursor.execute(sql)
         return cursor.fetchall()
 
-     #endregion
+    def get_movies(self):
+        cursor = self.cnx.cursor()  # get the cursor
+        sql = "SELECT * FROM Movies"
+        cursor.execute(sql)
+        return cursor.fetchall()
+
+    #endregion
 
     # region Queries
 
