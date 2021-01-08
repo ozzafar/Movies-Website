@@ -2,7 +2,47 @@ from DBbackend import DBbackend
 import html
 from config import *
 from flask import Flask, render_template, request
+
 app = Flask(__name__)
+
+
+def create_body():
+    db = DBbackend()
+    movies = db.get_movies()
+    body = ""
+    page = int(request.args.get('page'))
+    for i in range(20 * (page - 1), 20 * page):
+        poster_url = movies[i][9]
+        if poster_url != None:
+            poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][9]
+            id = str(movies[i][0])
+            name = movies[i][1]
+            body += ("""
+            		<div class="movie-item-style-2 movie-item-style-1">
+						<img src= """ + poster_url_full + """ alt="">
+						<div class="hvr-inner">
+							<a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+						</div>
+						<div class="mv-item-infor">
+							<h6><a """ + "href=moviesingle?movie=" + id + "&poster=" + poster_url + ">" + name + """ </a></h6>
+							<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
+						</div>
+					</div>""")
+    return body
+
+
+@app.route('/moviesingle', methods=['GET'])
+def moviesingle():
+    movie_id=request.args.get('movie')
+    db = DBbackend()
+    movie = db.get_movie(movie_id)[0]
+    return render_template('/moviesingle.html', name=movie[1],year=movie[3].year,runtime=str(movie[4]),plot=movie[5],date=str(movie[3]),poster="https://image.tmdb.org/t/p/w1280"+movie[9])
+
+
+@app.route('/moviegrid', methods=['GET'])
+def moviegrid():
+    body = create_body()
+    return render_template('/moviegrid.html', body=body)
 
 
 @app.route('/', methods=['GET'])
@@ -263,29 +303,3 @@ if __name__ == '__main__':
     if REMOTE:
         host = WEBSERVER
     app.run(port=PORT, debug=DEBUG, host=host)
-
-@app.route('/moviegrid', methods=['GET'])
-def moviegrid():
-    body = create_body()
-    return render_template('/moviegrid.html', body=body)
-
-def create_body():
-    db = DBbackend()
-    movies = db.get_movies()
-    body = ""
-    for i in range(20):
-        if movies[i][9] != None:
-            body += ("""
-            		<div class="movie-item-style-2 movie-item-style-1">
-						<img src= """ + "https://image.tmdb.org/t/p/w1280" + movies[i][9] + """ alt="">
-						<div class="hvr-inner">
-							<a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
-						</div>
-						<div class="mv-item-infor">
-							<h6><a href="#">oblivion</a></h6>
-							<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
-						</div>
-					</div>""")
-    return body
-
-
