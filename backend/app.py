@@ -48,8 +48,6 @@ def moviegrid():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    if DEBUG:
-        return render_template('index.html')
     filename = ''
     css = ''
     body = ''
