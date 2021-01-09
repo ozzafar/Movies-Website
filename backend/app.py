@@ -69,13 +69,22 @@ def moviegrid():
 @app.route('/celebritygrid', methods=['GET'])
 def celebritygrid():
     body = ""
+
+    if 1==0:
+        movie_score = request.args.get('movie_score')
+        start_year = request.args.get('start_year')
+        end_year = request.args.get('end_year')
+        celebrity_info = auxiliaryFuncs.query_to_actors_info(db, movie_score, start_year, end_year)
+    else:
+        celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
+
     page = int(request.args.get('page'))
 
-    celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
-    num_of_celebrities = min(9, len(celebrity_info))
-    for i in range(9 * (page - 1), 9 * page):
-    for celebrity in range(num_of_celebrities):
-        body += celebrity_info[celebrity].get_html_body()
+    if (page-1)*9 > len(celebrity_info):
+        body = "<p> No Actors For This Page <p>" # TODO - do it right
+    else:
+        for celebrity in range(9 * (page - 1), min(len(celebrity_info), 9 * page)):
+            body += celebrity_info[celebrity].get_html_body()
 
     return render_template('/celebritygrid.html', body=body)
 
