@@ -10,8 +10,8 @@ app = Flask(__name__)
 
 db = DBbackend()
 
-
 def create_body():
+
     movies = db.get_movies()
     body = ""
     page = int(request.args.get('page'))
@@ -37,11 +37,10 @@ def create_body():
 
 @app.route('/moviesingle', methods=['GET'])
 def moviesingle():
-    movie_id = request.args.get('movie')
+    movie_id=request.args.get('movie')
     db = DBbackend()
     movie = db.get_movie(movie_id)[0]
-    return render_template('/moviesingle.html', name=movie[1], year=movie[3].year, runtime=str(movie[4]), plot=movie[5],
-                           date=str(movie[3]), poster="https://image.tmdb.org/t/p/w1280" + movie[9])
+    return render_template('/moviesingle.html', name=movie[1],year=movie[3].year,runtime=str(movie[4]),plot=movie[5],date=str(movie[3]),poster="https://image.tmdb.org/t/p/w1280"+movie[9])
 
 
 @app.route('/moviegrid', methods=['GET'])
@@ -62,7 +61,7 @@ def index():
     genres = request.args.get('category')
     if is_valid_genre(genres):
         movie_length = request.args.get('movieLength')
-        if is_valid_movie_length(movie_length):  # genres != None and (is list and len(genres) == 2
+        if is_valid_movie_length(movie_length): # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
                 movies_info = auxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
@@ -238,7 +237,7 @@ def index():
         filename = 'bubbles'
         body = '<div id="bubbles"></div>'
         js1 = '<script type="text/javascript">\
-    var categories = [];' + get_js_genres_list() + '\
+    var categories = [];'+get_js_genres_list()+'\
 </script>'
         js2 = '<script type="text/javascript">\
     document.getElementById("findButton").onclick = function () {\
@@ -261,8 +260,8 @@ def index():
     body = html.unescape(body)
     js1 = html.unescape(js1)
     js2 = html.unescape(js2)
-    csspath = 'static/css/' + filename + '.css'
-    jspath = 'static/js/' + filename + '.js'
+    csspath = 'static/css/'+filename+'.css'
+    jspath = 'static/js/'+filename+'.js'
     return render_template('intro.html', csspath=csspath, css=css, body=body, jspath=jspath, js1=js1, js2=js2)
 
 
@@ -302,7 +301,7 @@ def get_js_genres_list():
     string = '\
     var nodes = new vis.DataSet(['
     for g in list_of_genres_db():
-        string += '{label: "' + g + '"},'
+        string += '{label: "'+g+'"},'
     string += ']);\
 '
     return string
