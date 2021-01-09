@@ -63,7 +63,8 @@ def index():
         if is_valid_movie_length(movie_length): # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
-                movies_info = auxiliaryFuncs.query_to_index_movie(genres, min_len, max_len, min_released_year, max_released_year)
+
+                movies_info = auxiliaryFuncs.query_to_index_movie(genres, movie_length, release)
                 num_of_movies = len(movies_info) # max_len = 11
                 for movie_index in range(num_of_movies):
                     bodyMor += movies_info[movie_index].get_html_body()
