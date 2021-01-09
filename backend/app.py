@@ -12,7 +12,7 @@ db = DBbackend()
 
 def create_body():
 
-    movies = db.get_movies()
+    movies = db.get_movies() # TODO chance to local DB var
     body = ""
     page = int(request.args.get('page'))
     for i in range(20 * (page - 1), 20 * page):
