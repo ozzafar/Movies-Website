@@ -8,7 +8,7 @@ def query_to_index_movie(db, user_genres, movie_length, release):
     indexed_movie_arr = []
 
     for movie in recommended_movies_data:
-        indexed_movie = pageclasses.IndexMovie(movie[1], movie[6], movie[2], movie[5])
+        indexed_movie = pageclasses.IndexMovie(movie[1], movie[6], movie[2].split(','), movie[5])
         indexed_movie_arr.append(indexed_movie)
 
     return indexed_movie_arr
