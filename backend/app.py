@@ -4,15 +4,12 @@ import auxiliaryFuncs
 from config import *
 from flask import Flask, render_template, request
 
-from pageclasses import IndexMovie
-
 app = Flask(__name__)
 
 db = DBbackend()
 
-def create_body():
-
-    movies = db.get_movies()
+def create_movie_body():
+    movies = db.get_movies_ratings()
     body = ""
     page = int(request.args.get('page'))
     for i in range(20 * (page - 1), 20 * page):
@@ -21,15 +18,16 @@ def create_body():
             poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][9]
             id = str(movies[i][0])
             name = movies[i][1]
+            rating = movies[i][18]
             body += ("""
             		<div class="movie-item-style-2 movie-item-style-1">
 						<img src= """ + poster_url_full + """ alt="">
 						<div class="hvr-inner">
-							<a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+							<a  href=moviesingle?movie=""" + id + """> Read more <i class="ion-android-arrow-dropright"></i> </a>
 						</div>
 						<div class="mv-item-infor">
 							<h6><a """ + "href=moviesingle?movie=" + id + ">" + name + """ </a></h6>
-							<p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
+							<p class="rate"><i class="ion-android-star"></i><span>""" + str(rating / 10)[:3] + """ </span> /10</p>
 						</div>
 					</div>""")
     return body
@@ -37,15 +35,25 @@ def create_body():
 
 @app.route('/moviesingle', methods=['GET'])
 def moviesingle():
-    movie_id=request.args.get('movie')
-    db = DBbackend()
+    movie_id = request.args.get('movie')
     movie = db.get_movie(movie_id)[0]
-    return render_template('/moviesingle.html', name=movie[1],year=movie[3].year,runtime=str(movie[4]),plot=movie[5],date=str(movie[3]),poster="https://image.tmdb.org/t/p/w1280"+movie[9])
+    genres = (db.get_movie_genres(movie_id)[0])[0].split(',')
+    rating = str(db.get_movie_rating(movie_id)[0][0] / 10)[:3]
+    director = db.get_movie_director(movie_id)[0][1:3]
+    director = director[0] + " " + director[1]
+    actors_db = db.get_movie_actors(movie_id)
+    actors = [act[1] + " " + act[2] for act in actors_db]
+    genres_for_html = ""
+    for i in range(len(genres)-1):
+        genres_for_html = genres_for_html + genres[i] +", "
+    genres_for_html += genres[-1]
+    trailer = "https://www.youtube.com/"+movie[10]
+    return render_template('/moviesingle.html', name=movie[1],year=movie[3].year,runtime=str(movie[4]),plot=movie[5],date=str(movie[3]),poster="https://image.tmdb.org/t/p/w1280"+movie[9],trailer=trailer,genres=genres_for_html,director=director,actors=actors,rating=rating)
 
 
 @app.route('/moviegrid', methods=['GET'])
 def moviegrid():
-    body = create_body()
+    body = create_movie_body()
     return render_template('/moviegrid.html', body=body)
 
 
