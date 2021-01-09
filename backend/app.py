@@ -1,7 +1,9 @@
 from DBbackend import DBbackend
 import html
+import auxiliaryFuncs
 from config import *
 from flask import Flask, render_template, request
+
 from pageclasses import IndexMovie
 
 app = Flask(__name__)
@@ -61,8 +63,8 @@ def index():
         if is_valid_movie_length(movie_length): # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
-                movies_info = getMovieInfo(genres, movie_length, release)
-                num_of_movies = min(11, len(movies_info))
+                movies_info = auxiliaryFuncs.query_to_index_movie(genres, min_len, max_len, min_released_year, max_released_year)
+                num_of_movies = len(movies_info) # max_len = 11
                 for movie_index in range(num_of_movies):
                     bodyMor += movies_info[movie_index].get_html_body()
                 return render_template('index.html', body=bodyMor)

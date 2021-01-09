@@ -190,18 +190,19 @@ class DBbackend:
 
     # ---------------- Queries ------------------
     # user_genres is an array
-    def recommendations(self, user_genres, min_len, max_len, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def recommendations_query(self, user_genres, min_len, max_len, start_year=MIN_YEAR, end_year=MAX_YEAR):
         pass
 
         # WORKING
         # user_genres_string = parse_genres(user_genres)
 
         # query = f"\
-        # SELECT rmn.movie_ID, rmn.title, GROUP_CONCAT(rmn.genre), rmn.released, rmn.run_time, rmn.popularity
+        # SELECT rmn.movie_ID, rmn.title, GROUP_CONCAT(rmn.genre), rmn.released, rmn.run_time, rmn.popularity, rmn.poster_URL
         # FROM(
         #     SELECT g.genre, m.movie_ID, m.title, m.released, m.run_time,
         #       (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 AS popularity,
-        #       ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank
+        #       ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank,
+        #       m.poster_URL
         #     FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
         #     WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
         #     AND (g.genre="Action" OR g.genre="Drama") AND m.movie_ID = ms.movie_ID
@@ -217,7 +218,7 @@ class DBbackend:
         # return rows
 
     # If user doesn't specifies user_genre - return all categories. Same with years
-    def popular_movies(self, user_genre, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def popular_movies_query(self, user_genre, start_year=MIN_YEAR, end_year=MAX_YEAR):
         pass
 
         # WORKING
@@ -231,7 +232,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def popular_actors(self, movie_score, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def popular_actors_query(self, movie_score, start_year=MIN_YEAR, end_year=MAX_YEAR):
         pass
 
         # WORKING
@@ -248,7 +249,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def director_actor_coupling(self, number_of_movies, user_genres):
+    def director_actor_coupling_query(self, number_of_movies, user_genres):
         pass
 
         # WORKING
@@ -266,7 +267,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def directors_movies_budget(self, budget, num_of_directors=10, actors_number=1):
+    def directors_movies_budget_query(self, budget, num_of_directors=10, actors_number=1):
         pass
 
         # WORKING
@@ -288,7 +289,7 @@ class DBbackend:
 
     # TODO - delete. no need in this query
     # return Director-total_budget (total_budget is the total_budget of movies made by the director, each having more that "num_of_actors" played in)
-    def directors_budget(self, budget, num_of_directors=10, num_of_actors=1):
+    def directors_budget_query(self, budget, num_of_directors=10, num_of_actors=1):
         pass
 
         # WORKING
@@ -306,7 +307,7 @@ class DBbackend:
         # return rows
 
     # user can ignore awards
-    def countries_movies(self, movie_budget, movie_awards=0):
+    def countries_movies_query(self, movie_budget, movie_awards=0):
         pass
 
         # WORKING
@@ -327,7 +328,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def actors_movies_awards(self, num_of_actors, start_year=MIN_YEAR):
+    def actors_movies_awards_query(self, num_of_actors, start_year=MIN_YEAR):
         pass
 
         # WORKING
@@ -346,7 +347,7 @@ class DBbackend:
 
         # ------ Full-Text Queries --------
 
-    def movies_with_string_in_name(self, string_to_search, sub_string=False):
+    def movies_with_string_in_name_query(self, string_to_search, sub_string=False):
         pass
 
         # WORKING
@@ -362,7 +363,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def movies_with_string_in_plot(self, string_to_search, sub_string=False):
+    def movies_with_string_in_plot_query(self, string_to_search, sub_string=False):
         pass
 
         # WORKING
@@ -378,7 +379,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def movies_actors_with_string_in_name(self, string_to_search, sub_string=False):
+    def movies_actors_with_string_in_name_query(self, string_to_search, sub_string=False):
             pass
         # WORKING
 
