@@ -4,7 +4,7 @@ from config import *
 
 
 MIN_YEAR = 1900
-MAX_YEAR = 2020
+MAX_YEAR = 2100
 ALL = "*"
 
 
@@ -190,7 +190,7 @@ class DBbackend:
 
     # ---------------- Queries ------------------
     # user_genres is an array
-    def recommendations_query(self, user_genres, min_len, max_len, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def recommendations_query(self, user_genres, min_len, max_len, start_year, end_year):
         pass
 
         # WORKING
@@ -218,7 +218,7 @@ class DBbackend:
         # return rows
 
     # If user doesn't specifies user_genre - return all categories. Same with years
-    def popular_movies_query(self, user_genre, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def popular_movies_query(self, user_genre, start_year, end_year):
         pass
 
         # WORKING
@@ -232,7 +232,7 @@ class DBbackend:
         # rows = self.execute_sql(query)
         # return rows
 
-    def popular_actors_query(self, movie_score, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def popular_actors_query(self, movie_score, start_year, end_year):
         pass
 
         # WORKING
