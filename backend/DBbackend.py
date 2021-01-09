@@ -484,8 +484,9 @@ class DBbackend:
             FROM Movies m, Movies_Crew mc, Person p
             WHERE m.movie_ID = mc.movie_ID AND mc.person_ID = p.person_ID AND m.movie_ID = {m_id} AND mc.role = "Director"
         """
-        rows = self.execute_sql(query)
-        return rows
+        rows = self.execute_sql(query)[0][1:3]
+        director_name = rows[0] + " " + rows[1]
+        return director_name
 
     def get_movie_actors(self, m_id):
         query = f"""
@@ -494,6 +495,7 @@ class DBbackend:
             WHERE m.movie_ID = ma.movie_ID AND ma.person_ID = p.person_ID AND m.movie_ID = {m_id}
         """
         rows = self.execute_sql(query)
-        return rows
+        actors = [act[1] + " " + act[2] for act in rows]
+        return actors
 
     #endregion

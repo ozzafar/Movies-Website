@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 db = DBbackend()
 
+
 def create_movie_body():
     movies = db.get_movies_ratings()
     body = ""
@@ -18,16 +19,16 @@ def create_movie_body():
             poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][9]
             id = str(movies[i][0])
             name = movies[i][1]
-            rating = movies[i][18]
-            body += ("""
+            rating = str(movies[i][18] / 10)[:3]
+            body += (f"""
             		<div class="movie-item-style-2 movie-item-style-1">
-						<img src= """ + poster_url_full + """ alt="">
+						<img src={poster_url_full} alt="">
 						<div class="hvr-inner">
-							<a  href=moviesingle?movie=""" + id + """> Read more <i class="ion-android-arrow-dropright"></i> </a>
+							<a  href=moviesingle?movie={id}> Read more <i class="ion-android-arrow-dropright"></i> </a>
 						</div>
 						<div class="mv-item-infor">
-							<h6><a """ + "href=moviesingle?movie=" + id + ">" + name + """ </a></h6>
-							<p class="rate"><i class="ion-android-star"></i><span>""" + str(rating / 10)[:3] + """ </span> /10</p>
+							<h6><a href=moviesingle?movie={id}> {name} </a></h6>
+							<p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
 						</div>
 					</div>""")
     return body
@@ -37,24 +38,34 @@ def create_movie_body():
 def moviesingle():
     movie_id = request.args.get('movie')
     movie = db.get_movie(movie_id)[0]
-    genres = (db.get_movie_genres(movie_id)[0])[0].split(',')
-    rating = str(db.get_movie_rating(movie_id)[0][0] / 10)[:3]
-    director = db.get_movie_director(movie_id)[0][1:3]
-    director = director[0] + " " + director[1]
-    actors_db = db.get_movie_actors(movie_id)
-    actors = [act[1] + " " + act[2] for act in actors_db]
-    genres_for_html = ""
-    for i in range(len(genres)-1):
-        genres_for_html = genres_for_html + genres[i] +", "
-    genres_for_html += genres[-1]
-    trailer = "https://www.youtube.com/"+movie[10]
-    return render_template('/moviesingle.html', name=movie[1],year=movie[3].year,runtime=str(movie[4]),plot=movie[5],date=str(movie[3]),poster="https://image.tmdb.org/t/p/w1280"+movie[9],trailer=trailer,genres=genres_for_html,director=director,actors=actors,rating=rating)
+
+    plot = movie[5]
+    year = movie[3].year
+    name = movie[1]
+    trailer = "https://www.youtube.com/" + movie[10]
+    poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
+    date = str(movie[3])
+    runtime = str(movie[4])
+    rating = str(db.get_movie_rating(movie_id)[0][0]/10)[:3]
+    director = db.get_movie_director(movie_id)
+    actors = db.get_movie_actors(movie_id)
+
+    genres_db = (db.get_movie_genres(movie_id)[0])[0].split(',')
+    genres = ""
+    for i in range(len(genres_db) - 1):
+        genres = genres + genres_db[i] + ", "
+    genres += genres_db[-1]
+
+    return render_template('/moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
+                           date=date, poster=poster, trailer=trailer,
+                           genres=genres, director=director, actors=actors, rating=rating)
 
 
 @app.route('/moviegrid', methods=['GET'])
 def moviegrid():
     body = create_movie_body()
     return render_template('/moviegrid.html', body=body)
+
 
 @app.route('/celebritygrid', methods=['GET'])
 def celebritygrid():
@@ -80,7 +91,7 @@ def index():
     genres = request.args.get('category')
     if is_valid_genre(genres):
         movie_length = request.args.get('movieLength')
-        if is_valid_movie_length(movie_length): # genres != None and (is list and len(genres) == 2
+        if is_valid_movie_length(movie_length):  # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
                 movies_info = auxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
@@ -256,7 +267,7 @@ def index():
         filename = 'bubbles'
         body = '<div id="bubbles"></div>'
         js1 = '<script type="text/javascript">\
-    var categories = [];'+get_js_genres_list()+'\
+    var categories = [];' + get_js_genres_list() + '\
 </script>'
         js2 = '<script type="text/javascript">\
     document.getElementById("findButton").onclick = function () {\
@@ -279,8 +290,8 @@ def index():
     body = html.unescape(body)
     js1 = html.unescape(js1)
     js2 = html.unescape(js2)
-    csspath = 'static/css/'+filename+'.css'
-    jspath = 'static/js/'+filename+'.js'
+    csspath = 'static/css/' + filename + '.css'
+    jspath = 'static/js/' + filename + '.js'
     return render_template('intro.html', csspath=csspath, css=css, body=body, jspath=jspath, js1=js1, js2=js2)
 
 
@@ -320,7 +331,7 @@ def get_js_genres_list():
     string = '\
     var nodes = new vis.DataSet(['
     for g in list_of_genres_db():
-        string += '{label: "'+g+'"},'
+        string += '{label: "' + g + '"},'
     string += ']);\
 '
     return string
