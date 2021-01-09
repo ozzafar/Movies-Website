@@ -48,6 +48,13 @@ def moviegrid():
     body = create_body()
     return render_template('/moviegrid.html', body=body)
 
+@app.route('/celebritygrid', methods=['GET'])
+def celebritygrid():
+    body = ""
+
+
+    return render_template('/moviegrid.html', body=body)
+
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
