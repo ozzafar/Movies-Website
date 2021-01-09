@@ -190,7 +190,7 @@ class DBbackend:
 
     # ---------------- Queries ------------------
     # user_genres is an array
-    def recommendations_query(self, user_genres, min_len, max_len, start_year=MIN_YEAR, end_year=MAX_YEAR):
+    def recommendations_query(self, user_genres, min_len, max_len, start_year, end_year):
         pass
 
         # WORKING
