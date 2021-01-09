@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 db = DBbackend()
 
-
 def create_movie_body():
     movies = db.get_movies_ratings()
     body = ""
@@ -70,9 +69,11 @@ def moviegrid():
 @app.route('/celebritygrid', methods=['GET'])
 def celebritygrid():
     body = ""
+    page = int(request.args.get('page'))
 
     celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
     num_of_celebrities = min(9, len(celebrity_info))
+    for i in range(9 * (page - 1), 9 * page):
     for celebrity in range(num_of_celebrities):
         body += celebrity_info[celebrity].get_html_body()
 
