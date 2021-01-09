@@ -86,7 +86,7 @@ def celebritygrid():
         for celebrity in range(9 * (page - 1), min(len(celebrity_info), 9 * page)):
             body += celebrity_info[celebrity].get_html_body()
 
-    return render_template('/celebritygrid.html', body=body)
+    return render_template('/celebritygrid.html', body=body, page=page)
 
 
 @app.route('/', methods=['GET'])

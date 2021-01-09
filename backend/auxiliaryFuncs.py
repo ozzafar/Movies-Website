@@ -24,11 +24,13 @@ def query_to_actors_info(db, movie_score, start_year, end_year):
     actors_info_arr = []
 
     for celebrity in popular_actors_data:
-        if celebrity[3] == 0:
-            profession = "Actor"
-        else:
+        if celebrity[5] is None:
+            continue
+        if celebrity[3] == 1:
             profession = "Actress"
-        celebrity_info = pageclasses.IndexMovie(celebrity[1], celebrity[2], profession, celebrity[5]. celebrity[4])
+        else:
+            profession = "Actor"
+        celebrity_info = pageclasses.CelebrityInfo(celebrity[1], celebrity[2], profession, celebrity[5], str(celebrity[4]))
         actors_info_arr.append(celebrity_info)
 
     return actors_info_arr
@@ -44,7 +46,9 @@ def query_to_crew_info(db, movie_score, start_year, end_year):
     crew_info_arr = []
 
     for celebrity in popular_crew_data:
-        celebrity_info = pageclasses.IndexMovie(celebrity[1], celebrity[2], celebrity[6], celebrity[5], celebrity[4])
+        if celebrity[5] is None:
+            continue
+        celebrity_info = pageclasses.CelebrityInfo(celebrity[1], celebrity[2], celebrity[6], celebrity[5], str(celebrity[4]))
         crew_info_arr.append(celebrity_info)
 
     return crew_info_arr
