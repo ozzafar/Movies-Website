@@ -191,10 +191,7 @@ class DBbackend:
     # ---------------- Queries ------------------
     # user_genres is an array
     def recommendations_query(self, user_genres, min_len, max_len, start_year, end_year):
-        # pass
-
-        # WORKING
-        # user_genres_string = parse_genres(user_genres)
+        user_genres_string = self.parse_genres(user_genres)
 
         query = f"""
         SELECT rmn.movie_ID, rmn.title, GROUP_CONCAT(rmn.genre), rmn.released, rmn.run_time, rmn.popularity, rmn.poster_URL
@@ -205,7 +202,7 @@ class DBbackend:
               m.poster_URL
             FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
             WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
-            AND (g.genre="Action" OR g.genre="Drama") AND m.movie_ID = ms.movie_ID
+            AND ({user_genres_string}) AND m.movie_ID = ms.movie_ID
             AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
             AND (EXTRACT(HOUR FROM m.run_time)*60+EXTRACT(MINUTE FROM m.run_time))
         	BETWEEN {min_len} AND {max_len}
@@ -215,8 +212,8 @@ class DBbackend:
         ORDER BY rmn.popularity DESC
         """
 
-        # rows = self.execute_sql(query)
-        # return rows
+        rows = self.execute_sql(query)
+        return rows
 
     # If user doesn't specifies user_genre - return all categories. Same with years
     def popular_movies_query(self, user_genre, start_year, end_year):
@@ -400,7 +397,7 @@ class DBbackend:
 
     # ------------ Auxiliary Funcs --------------
 
-    def parse_genres(user_genres):
+    def parse_genres(self, user_genres):
         string = ""
 
         for i, genre in enumerate(user_genres):
