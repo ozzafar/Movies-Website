@@ -52,8 +52,12 @@ def moviegrid():
 def celebritygrid():
     body = ""
 
+    celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
+    num_of_celebrities = min(9, len(celebrity_info))
+    for celebrity in range(num_of_celebrities):
+        body += celebrity_info[celebrity].get_html_body()
 
-    return render_template('/moviegrid.html', body=body)
+    return render_template('/celebritygrid.html', body=body)
 
 
 @app.route('/', methods=['GET'])
