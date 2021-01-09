@@ -2,6 +2,7 @@ from DBbackend import DBbackend
 import html
 from config import *
 from flask import Flask, render_template, request
+from pageclasses import IndexMovie
 
 app = Flask(__name__)
 
@@ -53,13 +54,18 @@ def index():
     body = ''
     js1 = ''
     js2 = ''
+    bodyMor = ""
     genres = request.args.get('category')
     if is_valid_genre(genres):
         movie_length = request.args.get('movieLength')
         if is_valid_movie_length(movie_length): # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
-                return render_template('index.html')
+                movies_info = getMovieInfo(genres, movie_length, release)
+                num_of_movies = min(11, len(movies_info))
+                for movie_index in range(num_of_movies):
+                    bodyMor += movies_info[movie_index].get_html_body()
+                return render_template('index.html', body=bodyMor)
             else:
                 filename = 'slider2'
                 css = '        .container {\
