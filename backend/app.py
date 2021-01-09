@@ -8,9 +8,10 @@ from pageclasses import IndexMovie
 
 app = Flask(__name__)
 
+db = DBbackend()
 
 def create_body():
-    db = DBbackend()
+
     movies = db.get_movies()
     body = ""
     page = int(request.args.get('page'))
@@ -64,7 +65,7 @@ def index():
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
 
-                movies_info = auxiliaryFuncs.query_to_index_movie(genres, movie_length, release)
+                movies_info = auxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
                 num_of_movies = len(movies_info) # max_len = 11
                 for movie_index in range(num_of_movies):
                     bodyMor += movies_info[movie_index].get_html_body()

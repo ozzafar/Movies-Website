@@ -191,28 +191,29 @@ class DBbackend:
     # ---------------- Queries ------------------
     # user_genres is an array
     def recommendations_query(self, user_genres, min_len, max_len, start_year, end_year):
-        pass
+        # pass
 
         # WORKING
         # user_genres_string = parse_genres(user_genres)
 
-        # query = f"\
-        # SELECT rmn.movie_ID, rmn.title, GROUP_CONCAT(rmn.genre), rmn.released, rmn.run_time, rmn.popularity, rmn.poster_URL
-        # FROM(
-        #     SELECT g.genre, m.movie_ID, m.title, m.released, m.run_time,
-        #       (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 AS popularity,
-        #       ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank,
-        #       m.poster_URL
-        #     FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
-        #     WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
-        #     AND (g.genre="Action" OR g.genre="Drama") AND m.movie_ID = ms.movie_ID
-        #     AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
-        #     AND (EXTRACT(HOUR FROM m.run_time)*60+EXTRACT(MINUTE FROM m.run_time))
-        # 	BETWEEN {min_len} AND {max_len}
-        #     ) rmn
-        # WHERE rmn.popularity_rank <= 10
-        # GROUP BY rmn.movie_ID, rmn.title, rmn.released, rmn.run_time, rmn.popularity
-        # ORDER BY rmn.popularity DESC
+        query = f"""
+        SELECT rmn.movie_ID, rmn.title, GROUP_CONCAT(rmn.genre), rmn.released, rmn.run_time, rmn.popularity, rmn.poster_URL
+        FROM(
+            SELECT g.genre, m.movie_ID, m.title, m.released, m.run_time,
+              (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 AS popularity,
+              ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank,
+              m.poster_URL
+            FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
+            WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
+            AND (g.genre="Action" OR g.genre="Drama") AND m.movie_ID = ms.movie_ID
+            AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
+            AND (EXTRACT(HOUR FROM m.run_time)*60+EXTRACT(MINUTE FROM m.run_time))
+        	BETWEEN {min_len} AND {max_len}
+            ) rmn
+        WHERE rmn.popularity_rank <= 10
+        GROUP BY rmn.movie_ID, rmn.title, rmn.released, rmn.run_time, rmn.popularity
+        ORDER BY rmn.popularity DESC
+        """
 
         # rows = self.execute_sql(query)
         # return rows

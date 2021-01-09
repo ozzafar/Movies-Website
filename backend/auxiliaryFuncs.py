@@ -1,9 +1,9 @@
 import DBbackend
 import pageclasses
 
-def query_to_index_movie(user_genres, movie_length, release):
+def query_to_index_movie(db, user_genres, movie_length, release):
     genres, min_len, max_len, start_year, end_year = parse_index_movie(user_genres, movie_length, release)
-    recommended_movies_data = DBbackend.recommendations_query(user_genres, min_len, max_len, start_year, end_year)
+    recommended_movies_data = db.recommendations_query(user_genres, min_len, max_len, start_year, end_year)
     indexed_movie_arr = []
 
     for movie in recommended_movies_data:
