@@ -217,35 +217,48 @@ class DBbackend:
 
     # If user doesn't specifies user_genre - return all categories. Same with years
     def popular_movies_query(self, user_genre, start_year, end_year):
-        pass
-
-        # WORKING
-        # query = f"\
-        # SELECT m.title, g.genre, m.released, m.run_time, m.plot, (ms.rotten_tomatoes+ ms.metacritic+ ms.imdb)/3 AS popularity, r.rated
-        # FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g, Rated r
-        # WHERE m.movie_ID = ms.movie_ID AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year} AND m.movie_ID = mg.movie_ID
-        #     AND mg.genre_ID = g.genre_ID AND g.genre = {user_genre} AND m.rated_ID = r.rated_ID
-        # ORDER BY popularity DESC"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
+        query = f"""
+        SELECT m.title, g.genre, m.released, m.run_time, m.plot, (ms.rotten_tomatoes+ ms.metacritic+ ms.imdb)/3 AS popularity, r.rated
+        FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g, Rated r
+        WHERE m.movie_ID = ms.movie_ID AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year} AND m.movie_ID = mg.movie_ID
+            AND mg.genre_ID = g.genre_ID AND g.genre = {user_genre} AND m.rated_ID = r.rated_ID
+        ORDER BY popularity DESC
+        """
+        rows = self.execute_sql(query)
+        return rows
 
     def popular_actors_query(self, movie_score, start_year, end_year):
-        pass
 
-        # WORKING
-        # query = f"\
-        # SELECT p.person_ID, p.first_name, p.last_name, COUNT(*) AS amount_of_movies
-        # FROM Person p, Movies_Actors ma, Movie_Score ms, Movies m
-        # WHERE p.person_ID = ma.person_ID AND ma.movie_ID = ms.movie_ID AND ma.movie_ID=m.movie_ID
-        # 	  AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
-        #     AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
-        #
-        # GROUP BY p.person_ID, p.first_name, p.last_name
-        # ORDER BY amount_of_movies DESC"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
+        query = f"""
+        SELECT p.person_ID, p.first_name, p.last_name, p.gender, COUNT(*) AS amount_of_movies, p.picture_URL
+        FROM Person p, Movies_Actors ma, Movie_Score ms, Movies m
+        WHERE p.person_ID = ma.person_ID AND ma.movie_ID = ms.movie_ID AND ma.movie_ID=m.movie_ID
+        	  AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
+            AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
+
+        GROUP BY p.person_ID, p.first_name, p.last_name, p.picture_URL
+        ORDER BY amount_of_movies DESC
+        """
+
+        rows = self.execute_sql(query)
+        return rows
+
+    def popular_crew_query(self, movie_score, start_year, end_year):
+
+        query = f"""
+        SELECT p.person_ID, p.first_name, p.last_name, p.gender, COUNT(*) AS amount_of_movies,
+              p.picture_URL, GROUP_CONCAT(DISTINCT mc.role SEPARATOR ", ")
+        FROM Person p, Movies_Crew mc, Movie_Score ms, Movies m
+        WHERE p.person_ID = mc.person_ID AND mc.movie_ID = ms.movie_ID AND mc.movie_ID=m.movie_ID
+        	  AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
+            AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
+
+        GROUP BY p.person_ID, p.first_name, p.last_name, p.picture_URL
+        ORDER BY amount_of_movies DESC"
+        """
+
+        rows = self.execute_sql(query)
+        return rows
 
     def director_actor_coupling_query(self, number_of_movies, user_genres):
         pass

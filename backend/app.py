@@ -56,6 +56,17 @@ def moviegrid():
     body = create_movie_body()
     return render_template('/moviegrid.html', body=body)
 
+@app.route('/celebritygrid', methods=['GET'])
+def celebritygrid():
+    body = ""
+
+    celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
+    num_of_celebrities = min(9, len(celebrity_info))
+    for celebrity in range(num_of_celebrities):
+        body += celebrity_info[celebrity].get_html_body()
+
+    return render_template('/celebritygrid.html', body=body)
+
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
@@ -73,7 +84,7 @@ def index():
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
                 movies_info = auxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
-                num_of_movies = min(1, len(movies_info))
+                num_of_movies = min(11, len(movies_info))
                 for movie_index in range(num_of_movies):
                     bodyMor += movies_info[movie_index].get_html_body()
                 return render_template('index.html', body=bodyMor)
