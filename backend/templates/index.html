@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7 no-js" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8 no-js" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en" class="no-js">
+
+
+<head>
+	<!-- Basic need -->
+	<title>Open Pediatrics</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="author" content="">
+
+    <!--Google Font-->
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
+	<!-- Mobile specific meta -->
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<meta name="format-detection" content="telephone-no">
+
+	<!-- CSS files -->
+	<link rel="stylesheet" href="static/css/plugins.css">
+	<link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+<!--preloading-->
+<div id="preloader">
+    <img class="logo" src="static/images/logo1.png" alt="" width="119" height="58">
+    <div id="status">
+        <span></span>
+        <span></span>
+    </div>
+</div>
+<!--end of preloading-->
+
+<!-- BEGIN | Header -->
+<header class="ht-header">
+	<div class="container">
+		<nav class="navbar navbar-default navbar-custom">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header logo">
+				    <div class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					    <span class="sr-only">Toggle navigation</span>
+					    <div id="nav-icon1">
+							<span></span>
+							<span></span>
+							<span></span>
+						</div>
+				    </div>
+				    <a href="index"><img class="logo" src="static/images/logo1.png" alt="" width="119" height="58"></a>
+			    </div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse flex-parent" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav flex-child-menu menu-left">
+						<li class="hidden">
+							<a href="#page-top"></a>
+						</li>
+						<li class="dropdown first">
+							<a class="btn btn-default lv1">
+							Home <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+						<li class="dropdown first">
+							<a href="moviegrid?page=1" class="btn btn-default lv1">
+								movies <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+						<li class="dropdown first">
+							<a href="celebritygrid?page=1" class="btn btn-default lv1">
+								celebrities <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+						<li class="dropdown first">
+							<a class="btn btn-default lv1">
+								Fun Facts <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+			<!-- /.navbar-collapse -->
+	    </nav>
+
+	    <!-- top search form -->
+	    <div class="top-search">
+	    	<select>
+				<option value="united">All</option>
+				<option value="saab">Movies</option>
+				<option value="saab2">Actors</option>
+			</select>
+			<input type="text" placeholder="Search for a movie, TV Show or celebrity that you are looking for">
+	    </div>
+	</div>
+</header>
+<!-- END | Header -->
+
+<div class="slider movie-items">
+	<div class="container">
+		<div class="row">
+	    	<div class="slick-multiItemSlider">
+                {{body|safe}}
+	    	</div>
+	    </div>
+	</div>
+</div>
+<!--end of latest new v1 section-->
+<!-- footer section-->
+<footer class="ht-footer">
+	<div class="container">
+		<div class="flex-parent-ft">
+			<div class="flex-child-ft item1">
+				 <a href="index"><img class="logo" src="static/images/logo1.png" alt=""></a>
+				 <p>Built by<br>Mor Polani<br>Daniel Kotler<br>Oz Zafar<br>Dvir Salomon</p>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="backtotop">
+			<p><a href="#" id="back-to-top">Back to top  <i class="ion-ios-arrow-thin-up"></i></a></p>
+		</div>
+	</div>
+</footer>
+<!-- end of footer section-->
+
+<script src="static/js/jquery.js"></script>
+<script src="static/js/plugins.js"></script>
+<script src="static/js/plugins2.js"></script>
+<script src="static/js/custom.js"></script>
+</body>
+
+
+</html>
