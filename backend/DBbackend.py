@@ -358,21 +358,23 @@ class DBbackend:
 
         # ------ Full-Text Queries --------
 
-    def movies_with_string_in_name_query(self, string_to_search, sub_string=False):
-        pass
+    def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genre, start_year, end_year, sub_string=False):
 
-        # WORKING
+        if sub_string:
+            string_to_search = string_to_search + "*"
 
-        # if sub_string:
-        #     string_to_search = string_to_search + "*"
-        #
-        # query = f"\
-        # SELECT m.title, r.rated, m.released, m.run_time, m.plot, m.awards, m.budget, m.revenue \
-        # FROM Movies m, Rated r \
-        # WHERE m.rated_ID = r.rated_ID AND Match(title) AGAINST(\"{string_to_search}\" IN BOOLEAN MODE)"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
+        query = f"""
+        SELECT m.title, g.genre, (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity
+        FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g
+        WHERE Match(m.title) AGAINST("{string_to_search}" IN BOOLEAN MODE)
+              AND m.movie_ID = ms.movie_ID
+              AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
+              AND m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID AND g.genre = {user_genre}
+              AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
+        ORDER BY popularity DESC
+        """
+        rows = self.execute_sql(query)
+        return rows
 
     def movies_with_string_in_plot_query(self, string_to_search, sub_string=False):
         pass
