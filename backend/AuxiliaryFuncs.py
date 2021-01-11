@@ -1,5 +1,5 @@
 import DBbackend
-import pageclasses
+import PageClasses
 
 
 def query_to_index_movie(db, user_genres, movie_length, release):
@@ -8,7 +8,7 @@ def query_to_index_movie(db, user_genres, movie_length, release):
     indexed_movie_arr = []
 
     for movie in recommended_movies_data:
-        indexed_movie = pageclasses.IndexMovie(movie[1], movie[6], movie[2].split(','), movie[5])
+        indexed_movie = PageClasses.IndexMovie(movie[1], movie[6], movie[2].split(','), movie[5])
         indexed_movie_arr.append(indexed_movie)
 
     return indexed_movie_arr
@@ -30,7 +30,7 @@ def query_to_actors_info(db, movie_score, start_year, end_year):
             profession = "Actress"
         else:
             profession = "Actor"
-        celebrity_info = pageclasses.CelebrityInfo(celebrity[1], celebrity[2], profession, celebrity[5], str(celebrity[4]))
+        celebrity_info = PageClasses.CelebrityInfo(celebrity[1], celebrity[2], profession, celebrity[5], str(celebrity[4]))
         actors_info_arr.append(celebrity_info)
 
     return actors_info_arr
@@ -48,7 +48,7 @@ def query_to_crew_info(db, movie_score, start_year, end_year):
     for celebrity in popular_crew_data:
         if celebrity[5] is None:
             continue
-        celebrity_info = pageclasses.CelebrityInfo(celebrity[1], celebrity[2], celebrity[6], celebrity[5], str(celebrity[4]))
+        celebrity_info = PageClasses.CelebrityInfo(celebrity[1], celebrity[2], celebrity[6], celebrity[5], str(celebrity[4]))
         crew_info_arr.append(celebrity_info)
 
     return crew_info_arr

@@ -1,6 +1,6 @@
 from DBbackend import DBbackend
 import html
-import auxiliaryFuncs
+import AuxiliaryFuncs
 from config import *
 from flask import Flask, render_template, request
 
@@ -11,7 +11,25 @@ db = DBbackend()
 def create_movie_body():
     movies = db.get_movies_ratings()
     body = ""
-    page = int(request.args.get('page'))
+    page = request.args.get('page')
+    if type(page) is str:
+        page = int(page)
+    else:
+        page = 1
+
+    # search fields:
+    if 'submit' in request.form.keys():
+        is_submitted = request.form.get('submit')
+        if type(is_submitted) is str:
+            if is_submitted == 'submit':
+                exact_match = request.form.get('exact_match')
+                movie_title = request.form.get('movie_title')
+                genres = request.form.get('genres')
+                minimum_rating = request.form.get('minimum_rating')
+                from_year = request.form.get('from_year')
+                to_year = request.form.get('to_year')
+
+
     for i in range(20 * (page - 1), 20 * page):
         poster_url = movies[i][9]
         if poster_url != None:
@@ -41,7 +59,7 @@ def moviesingle():
     plot = movie[5]
     year = movie[3].year
     name = movie[1]
-    trailer = "https://www.youtube.com/" + movie[10]
+    trailer = "https://www.youtube.com/watch?v=" + movie[10]
     poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
     date = str(movie[3])
     runtime = str(movie[4])
@@ -60,10 +78,37 @@ def moviesingle():
                            genres=genres, director=director, actors=actors, rating=rating)
 
 
-@app.route('/moviegrid', methods=['GET'])
+@app.route('/moviegrid', methods=['GET', 'POST'])
 def moviegrid():
     body = create_movie_body()
-    return render_template('/moviegrid.html', body=body)
+    return render_template('/moviegrid.html', body=body, genres=list_of_genres_db())
+
+
+@app.route('/facts', methods=['GET', 'POST'])
+def fun_facts():
+    fact = request.args.get('fact')
+    if type(fact) is str:
+        is_form_sent = False
+        is_submitted = request.form.get('submit')
+        if fact == 'couples':
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    num_of_common_movies = int(request.form.get('number_of_common_movies'))
+                    genres = str(request.form.get('number_of_common_movies'))
+                    genres_lst = genres.split(',')
+                    genres_lst = [x.strip() for x in genres_lst]
+            return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db())
+        elif fact == 'popular_directors':
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    budget = int(request.form.get('budget'))
+                    num_of_actors = int(request.form.get('num_of_actors'))
+            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent)
+
+
+    return render_template('facts.html')
 
 
 @app.route('/celebritygrid', methods=['GET'])
@@ -74,11 +119,15 @@ def celebritygrid():
         movie_score = request.args.get('movie_score')
         start_year = request.args.get('start_year')
         end_year = request.args.get('end_year')
-        celebrity_info = auxiliaryFuncs.query_to_actors_info(db, movie_score, start_year, end_year)
+        celebrity_info = AuxiliaryFuncs.query_to_actors_info(db, movie_score, start_year, end_year)
     else:
-        celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
+        celebrity_info = AuxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
 
-    page = int(request.args.get('page'))
+    page = request.args.get('page')
+    if type(page) is str:
+        page = int(page)
+    else:
+        page = 1
 
     if (page-1)*9 > len(celebrity_info):
         body = "<p> No Actors For This Page <p>" # TODO - do it right
@@ -104,7 +153,7 @@ def index():
         if is_valid_movie_length(movie_length):  # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
-                movies_info = auxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
+                movies_info = AuxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
                 num_of_movies = min(11, len(movies_info))
                 for movie_index in range(num_of_movies):
                     bodyMor += movies_info[movie_index].get_html_body()

@@ -1,0 +1,84 @@
+{% extends "facts.html" %}
+{% block content %}
+        <div class="row ipad-width">
+			<div class="col-md-8 col-sm-12 col-xs-12">
+                {% if is_form_sent %}
+				<div class="topbar-filter">
+					<p style="padding-right: 300px;">Found <span>1,000 movies</span> in total</p>
+				</div>
+				<div class="flex-wrap-movielist">
+					<div class="movie-item-style-2 movie-item-style-1">
+                        <img src="static/images/uploads/mv1.jpg" alt="">
+                        <div class="hvr-inner">
+                            <a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                        </div>
+                        <div class="mv-item-infor">
+                            <h6><a href="#">oblivion</a></h6>
+                            <p class="rate"><i class="ion-android-star"></i><span>8.1</span> /10</p>
+                        </div>
+                    </div>
+                    <div class="movie-item-style-2 movie-item-style-1">
+                        <img src="static/images/uploads/mv2.jpg" alt="">
+                        <div class="hvr-inner">
+                            <a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                        </div>
+                        <div class="mv-item-infor">
+                            <h6><a href="#">into the wild</a></h6>
+                            <p class="rate"><i class="ion-android-star"></i><span>7.8</span> /10</p>
+                        </div>
+                    </div>
+
+
+                    <div class="movie-item-style-2 movie-item-style-1">
+                        <img src="static/images/uploads/mv-item3.jpg" alt="">
+                        <div class="hvr-inner">
+                            <a  href="moviesingle.html"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                        </div>
+                        <div class="mv-item-infor">
+                            <h6><a href="#">Die hard</a></h6>
+                            <p class="rate"><i class="ion-android-star"></i><span>7.4</span> /10</p>
+                        </div>
+                    </div>
+				</div>
+				<div class="topbar-filter">
+					<div class="pagination2" style="line-height: 2em; padding-left: 50px;">
+						<span>Page 1 of 50:</span>
+						<a class="active" href=?page=2>1</a>
+						<a href="?page=2">2</a>
+						<a href="?page=3">3</a>
+						<a href="#">...</a>
+						<a href="#">49</a>
+						<a href="#">50</a>
+						<a href="#"><i class="ion-arrow-right-b"></i></a>
+					</div>
+				</div>
+                {% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12">
+				<div class="sidebar">
+					<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1" action="" method="post">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>Budget</label>
+									<input type="text" name="budget" placeholder="Enter budget">
+								</div>
+								<div class="col-md-12 form-it">
+									<label>Number of actors</label>
+									<input type="text" name="num_of_actors" placeholder="Enter a number">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}
