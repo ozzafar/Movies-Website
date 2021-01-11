@@ -11,7 +11,7 @@
 
 <head>
 	<!-- Basic need -->
-	<title>Find Me A Movie - Movie Listing</title>
+	<title>Find Me A Movie - Fun Facts</title>
 	<meta charset="UTF-8">
 	<meta name="description" content="">
 	<meta name="keywords" content="">
@@ -26,6 +26,23 @@
 	<!-- CSS files -->
 	<link rel="stylesheet" href="static/css/plugins.css">
 	<link rel="stylesheet" href="static/css/style.css">
+	<style type="text/css">
+		.button-search-fact {
+			background-color: #dd003f;
+			color: #ffffff;
+			border-color: #0a1a17;
+			margin-top: 20px;
+			padding: 11px 25px;
+			-webkit-border-radius: 20px;
+			-moz-border-radius: 20px;
+			border-radius: 20px;
+			font-family: 'Dosis', sans-serif;
+			font-size: 14px;
+			font-weight: bold;
+			text-transform: uppercase;
+			cursor: pointer;
+		}
+	</style>
 </head>
 <body>
 <!--preloading-->
@@ -84,104 +101,38 @@
 <div class="hero common-hero">
 	<div class="container">
 		<div class="row">
-			<div class="col-md-12">
+			<div id="facts_header" class="col-md-12">
 				<div class="hero-ct">
-					<h1> movie listing</h1>
-					<ul class="breadcumb">
-						<li class="active"><a href="/index">Home</a></li>
-						<li> <span class="ion-ios-arrow-right"></span> movie listing</li>
-					</ul>
+					<h1>Fun Facts</h1>
 				</div>
+
+				<!-- top search form -->
+				<form action="" method="get">
+					<div class="top-search">
+						<select name="fact" id="choose_query" style="width:100%;">
+							<option value="init">Choose fun facts</option>
+							<option value="couples">Couples of director and actor</option>
+						</select>
+					</div>
+					<div id="explain_area" style="background-color: white; border-radius: 20px; padding: 20px; margin-top:30px;">
+						<p id="init" style="color: black; margin: 0;">
+							Waiting for choosing fun fact
+						</p>
+						<p id="couples" style="color: black; margin: 0; display: none;">
+							bla bla
+						</p>
+					</div>
+					<p>
+						<input type="submit" value="Select" class="button-search-fact">
+					</p>
+				</form>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="page-single">
 	<div class="container">
-		<div class="row ipad-width">
-			<div class="col-md-8 col-sm-12 col-xs-12">
-				<div class="topbar-filter">
-					<p style="padding-right: 300px;">Found <span>1,000 movies</span> in total</p>
-				</div>
-				<div class="flex-wrap-movielist">
-					{{body|safe}}
-				</div>
-				<div class="topbar-filter">
-					<div class="pagination2" style="line-height: 2em; padding-left: 50px;">
-						<span>Page 1 of 50:</span>
-						<a class="active" href=?page=2>1</a>
-						<a href="?page=2">2</a>
-						<a href="?page=3">3</a>
-						<a href="#">...</a>
-						<a href="#">49</a>
-						<a href="#">50</a>
-						<a href="#"><i class="ion-arrow-right-b"></i></a>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 col-sm-12 col-xs-12">
-				<div class="sidebar">
-					<div class="searh-form">
-						<h4 class="sb-title">Search for movie</h4>
-						<form class="form-style-1" action="" method="post">
-							<div class="row">
-								<div class="col-md-12 form-it">
-									<label>Search type</label>
-									<select name="exact_match">
-										<option value="contains">Contains</option>
-										<option value="exact">Exact match</option>
-									</select>
-								</div>
-								<div class="col-md-12 form-it">
-									<label>Movie title</label>
-									<input type="text" name="movie_title" placeholder="Enter keywords">
-								</div>
-								<div class="col-md-12 form-it">
-									<label>Genres</label>
-									<div class="group-ip">
-										<select name="genres" multiple="" class="ui fluid dropdown">
-											<option value="">Choose genres</option>
-											{% for genre in genres %}
-											<option value="{{genre}}">{{genre}}</option>
-											{% endfor %}
-										</select>
-									</div>
-								</div>
-								<div class="col-md-12 form-it">
-									<label>Minimum rating</label>
-									<select name="minimum_rating">
-										<option value="0">All</option>
-										<option value="1">1</option>
-										<option value="2">2</option>
-										<option value="3">3</option>
-										<option value="4">4</option>
-										<option value="5">5</option>
-										<option value="6">6</option>
-										<option value="7">7</option>
-										<option value="8">8</option>
-										<option value="9">9</option>
-									</select>
-								</div>
-								<div class="col-md-12 form-it">
-									<label>Release Year</label>
-									<div class="row">
-										<div class="col-md-6">
-											<input type="text" name="from_year" placeholder="From">
-										</div>
-										<div class="col-md-6">
-											<input type="text" name="to_year" placeholder="To">
-										</div>
-									</div>
-								</div>
-								<div class="col-md-12 ">
-									<input class="submit" type="submit" name="submit" value="submit">
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
+		{% block content %}{% endblock %}
 	</div>
 </div>
 <!-- footer section-->
@@ -206,7 +157,13 @@
 <script src="static/js/plugins.js"></script>
 <script src="static/js/plugins2.js"></script>
 <script src="static/js/custom.js"></script>
-
+<script>
+$( "#choose_query" ).change(function() {
+	show_p_id = $( this ).val();
+	$( "#explain_area p:not(#"+show_p_id+")" ).hide( "slow" );
+	$( "#explain_area #" + show_p_id ).show( "slow" );
+});
+</script>
 </body>
 
 

@@ -1,0 +1,121 @@
+{% extends "facts.html" %}
+{% block content %}
+		<div class="row ipad-width2">
+			<div class="col-md-9 col-sm-12 col-xs-12">
+				{% if is_form_sent %}
+				<div class="topbar-filter">
+					<p class="pad-change" style="padding-right: 370px;">Found <span>1,608 celebrities</span> in total</p>
+				</div>
+				<div class="celebrity-items">
+					<div class="ceb-item">
+						<a href="celebritysingle.html"><img src="static/images/uploads/ceb1.jpg" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="celebritylist.html">Tom Hardy</a></h2>
+							<span>director, usa</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="celebritylist.html"><img src="static/images/uploads/ceb2.jpg" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="celebritylist.html">Leonardo DiCaprio</a></h2>
+							<span>actor, mexico</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<div class="ceb-infor">
+							<p><span>Number of common movies: 200</span></p>
+							<p><span>Genres:</span><br>Action<br>Drama<br>Family<br>Adventure</p>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="celebritysingle.html"><img src="static/images/uploads/ceb1.jpg" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="celebritylist.html">Tom Hardy</a></h2>
+							<span>director, usa</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="celebritylist.html"><img src="static/images/uploads/ceb2.jpg" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="celebritylist.html">Leonardo DiCaprio</a></h2>
+							<span>actor, mexico</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<div class="ceb-infor">
+							<p><span>Number of common movies: 200</span></p>
+							<p><span>Genres:</span><br>Action<br>Drama<br>Family<br>Adventure</p>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="celebritysingle.html"><img src="static/images/uploads/ceb1.jpg" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="celebritylist.html">Tom Hardy</a></h2>
+							<span>director, usa</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="celebritylist.html"><img src="static/images/uploads/ceb2.jpg" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="celebritylist.html">Leonardo DiCaprio</a></h2>
+							<span>actor, mexico</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<div class="ceb-infor">
+							<p><span>Number of common movies: 200</span></p>
+							<p><span>Genres:</span><br>Action<br>Drama<br>Family<br>Adventure</p>
+						</div>
+					</div>
+				</div>
+				<div class="topbar-filter">
+
+
+					<div class="pagination2">
+						<span>Page 1 of 6:</span>
+						<a class="active" href="celebritygrid?page=1">1</a>
+						<a href="celebritygrid?page=2">2</a>
+						<a href="celebritygrid?page=3">3</a>
+						<a href="celebritygrid?page=4">4</a>
+						<a href="celebritygrid?page=5">5</a>
+						<a href="celebritygrid?page=6">6</a>
+						<a href="#"><i class="ion-arrow-right-b"></i></a>
+					</div>
+				</div>
+				{% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-3 col-xs-12 col-sm-12">
+				<div class="sidebar">
+						<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1 celebrity-form" action="" method="post">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>Number of common movies:</label>
+									<input type="text" name="number_of_common_movies" placeholder="Enter a number">
+								</div>
+								<div class="col-md-12 form-it">
+									<label>Genres</label>
+									<div class="group-ip">
+										<select name="genres" multiple="" class="ui fluid dropdown">
+											<option value="">Choose genres</option>
+											{% for genre in genres %}
+											<option value="{{genre}}">{{genre}}</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}

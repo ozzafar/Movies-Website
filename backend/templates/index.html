@@ -11,7 +11,7 @@
 
 <head>
 	<!-- Basic need -->
-	<title>Open Pediatrics</title>
+	<title>Find Me A Movie</title>
 	<meta charset="UTF-8">
 	<meta name="description" content="">
 	<meta name="keywords" content="">
@@ -44,15 +44,7 @@
 		<nav class="navbar navbar-default navbar-custom">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header logo">
-				    <div class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					    <span class="sr-only">Toggle navigation</span>
-					    <div id="nav-icon1">
-							<span></span>
-							<span></span>
-							<span></span>
-						</div>
-				    </div>
-				    <a href="index"><img class="logo" src="static/images/logo1.png" alt="" width="119" height="58"></a>
+				    <a href="/index"><img class="logo" src="static/images/logo1.png" alt="" width="119" height="58"></a>
 			    </div>
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse flex-parent" id="bs-example-navbar-collapse-1">
@@ -61,22 +53,22 @@
 							<a href="#page-top"></a>
 						</li>
 						<li class="dropdown first">
-							<a class="btn btn-default lv1">
+							<a href="/index" class="btn btn-default lv1">
 							Home <i class="fa" aria-hidden="true"></i>
 							</a>
 						</li>
 						<li class="dropdown first">
-							<a href="moviegrid?page=1" class="btn btn-default lv1">
+							<a href="/moviegrid" class="btn btn-default lv1">
 								movies <i class="fa" aria-hidden="true"></i>
 							</a>
 						</li>
 						<li class="dropdown first">
-							<a href="celebritygrid?page=1" class="btn btn-default lv1">
+							<a href="/celebritygrid" class="btn btn-default lv1">
 								celebrities <i class="fa" aria-hidden="true"></i>
 							</a>
 						</li>
 						<li class="dropdown first">
-							<a class="btn btn-default lv1">
+							<a href="/facts" class="btn btn-default lv1">
 								Fun Facts <i class="fa" aria-hidden="true"></i>
 							</a>
 						</li>
@@ -85,15 +77,6 @@
 			<!-- /.navbar-collapse -->
 	    </nav>
 
-	    <!-- top search form -->
-	    <div class="top-search">
-	    	<select>
-				<option value="united">All</option>
-				<option value="saab">Movies</option>
-				<option value="saab2">Actors</option>
-			</select>
-			<input type="text" placeholder="Search for a movie, TV Show or celebrity that you are looking for">
-	    </div>
 	</div>
 </header>
 <!-- END | Header -->

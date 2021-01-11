@@ -260,6 +260,7 @@ class DBbackend:
         rows = self.execute_sql(query)
         return rows
 
+    # returns (director, actor, num of movies, genres) with more than # of movies of some genres
     def director_actor_coupling_query(self, number_of_movies, user_genres):
         pass
 
