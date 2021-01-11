@@ -103,8 +103,14 @@ def fun_facts():
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
-                    budget = int(request.form.get('budget'))
-                    num_of_actors = int(request.form.get('num_of_actors'))
+                    budget = request.form.get('budget')
+                    if budget == '':
+                        budget = '0'
+                    budget = int(budget)
+                    num_of_actors = request.form.get('num_of_actors')
+                    if num_of_actors == '':
+                        num_of_actors = '0'
+                    num_of_actors = int(num_of_actors)
             return render_template('facts_popular_directors.html', is_form_sent=is_form_sent)
 
 
