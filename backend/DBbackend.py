@@ -245,6 +245,7 @@ class DBbackend:
         rows = self.execute_sql(query)
         return rows
 
+    # Celebrities grid
     def popular_crew_query(self, movie_score, start_year, end_year):
 
         query = f"""
@@ -280,25 +281,23 @@ class DBbackend:
         return rows
 
     # Fun Facts
-    def directors_movies_budget_query(self, budget, num_of_directors=10, actors_number=1):
-        pass
+    def directors_movies_budget_query(self, budget, actors_number=1):
 
-        # WORKING
+        query = f"""
+        SELECT t.person_ID, t.first_name AS director_first_name, t.last_name AS director_last_name, 
+            t.title, t.num_of_actors, t.budget, t.total_budget
+        FROM (
+            SELECT person_ID, first_name, last_name, title, num_of_actors, budget,
+        	    SUM(budget) OVER (PARTITION BY person_ID, first_name, last_name) total_budget
+            FROM Movie_numOfActors_Director mad
+            WHERE mad.num_of_actors >={actors_number}
+          ) t
+        WHERE t.total_budget>={budget}
+        ORDER BY director_first_name, director_last_name
+        """
 
-        # query = f"\
-        # SELECT t.person_ID, t.first_name AS director_first_name, t.last_name AS director_last_name,
-        # 	t.title, t.num_of_actors, t.budget, t.total_budget
-        # FROM (
-        #   SELECT person_ID, first_name, last_name, title, num_of_actors, budget,
-        # 	    SUM(budget) OVER (PARTITION BY person_ID, first_name, last_name) total_budget
-        #   FROM Movie_numOfActors_Director mad
-        #   WHERE mad.num_of_actors >={actors_number}
-        #   ) t
-        # WHERE t.total_budget>={budget}
-        # ORDER BY director_first_name, director_last_name"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
+        rows = self.execute_sql(query)
+        return rows
 
     # TODO - delete. no need in this query
     # return Director-total_budget (total_budget is the total_budget of movies made by the director, each having more that "num_of_actors" played in)
@@ -322,48 +321,45 @@ class DBbackend:
     # user can ignore awards
     # Fun Facts
     def countries_movies_query(self, movie_budget, movie_awards=0):
-        pass
 
-        # WORKING
+        query = f"""
+        SELECT cmn.country, cmn.title, cmn.budget, cmn.awards
+        FROM(
+            SELECT pc.country, m.title, m.budget, m.awards,
+                ROW_NUMBER() OVER(Partition BY pc.country
+                ORDER BY m.budget, m.awards DESC) AS ranked_budget
+            FROM Production_Countries pc, Movie_Countries mc, Movies m
+            WHERE pc.prod_country_ID = mc.prod_country_ID AND mc.movie_ID = m.movie_ID
+                        AND m.budget >= {movie_budget} AND m.awards >= {movie_awards}
+            ) cmn
+        WHERE cmn.ranked_budget <= 10 # for each country return only 10 countries
+        ORDER BY cmn.country, cmn.budget, cmn.awards
+        """
 
-        # query = f" \
-        # SELECT cmn.country, cmn.title, cmn.budget, cmn.awards \
-        # FROM( \
-        #     SELECT pc.country, m.title, m.budget, m.awards, \
-        #         ROW_NUMBER() OVER(Partition BY pc.country \
-        #         ORDER BY m.budget, m.awards DESC) AS ranked_budget \
-        #     FROM Production_Countries pc, Movie_Countries mc, Movies m \
-        #     WHERE pc.prod_country_ID = mc.prod_country_ID AND mc.movie_ID = m.movie_ID \
-        #                 AND m.budget >= {movie_budget} AND m.awards >= {movie_awards}\
-        #     ) cmn \
-        # WHERE cmn.ranked_budget <= 10 # for each country return only 10 countries\
-        # ORDER BY cmn.country, cmn.budget, cmn.awards"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
+        rows = self.execute_sql(query)
+        return rows
 
     # Fun Facts
-    def actors_movies_awards_query(self, num_of_actors, start_year=MIN_YEAR):
-        pass
+    def actors_movies_awards_query(self, start_year):
 
-        # WORKING
-        # query = f"\
-        # SELECT p.first_name, p.last_name, p.gender, COUNT(*) AS number_of_movies_played ,
-        # 	SUM(m.awards) AS total_awards
-        # FROM Person p, Movies_Actors ma, Movies m
-        # WHERE p.person_ID = ma.person_ID AND ma.movie_ID = m.movie_ID
-        #     AND EXTRACT(YEAR FROM m.released) > {start_year}
-        # GROUP BY p.person_ID, p.first_name, p.last_name, p.gender
-        # ORDER BY total_awards DESC, number_of_movies_played DESC
-        # LIMIT {num_of_actors}"
+        query = f"""
+        SELECT p.first_name, p.last_name, p.gender, COUNT(*) AS number_of_movies_played ,
+        	SUM(m.awards) AS total_awards
+        FROM Person p, Movies_Actors ma, Movies m
+        WHERE p.person_ID = ma.person_ID AND ma.movie_ID = m.movie_ID
+            AND EXTRACT(YEAR FROM m.released) > {start_year}
+        GROUP BY p.person_ID, p.first_name, p.last_name, p.gender
+        ORDER BY total_awards DESC, number_of_movies_played DESC
+        """
 
-        # rows = self.execute_sql(query)
-        # return rows
+        rows = self.execute_sql(query)
+        return rows
 
     # ------ Full-Text Queries --------
 
     # Movies Grid
-    def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genre, start_year, end_year, sub_string=False):
+    def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genre, start_year,
+                                         end_year, sub_string=False):
 
         if sub_string:
             string_to_search = string_to_search + "*"
@@ -381,6 +377,7 @@ class DBbackend:
         rows = self.execute_sql(query)
         return rows
 
+    # TODO - delete. not using this query
     def movies_with_string_in_plot_query(self, string_to_search, sub_string=False):
         pass
 
@@ -399,22 +396,22 @@ class DBbackend:
 
     # Fun Facts/Movies Grid
     def movies_actors_with_string_in_name_query(self, string_to_search, sub_string=False):
-            pass
-        # WORKING
 
-        # if sub_string:
-        #     string_to_search = string_to_search + "*"
-        #
-        # query = f"\
-        # SELECT m.movie_ID, m.title, COUNT(*) as num_of_actors, GROUP_CONCAT(concat(p.first_name, " "), p.last_name SEPARATOR ", ")
-        # FROM Movies m, Movies_Actors ma, Person p
-        # WHERE m.movie_ID = ma.movie_ID AND p.person_ID = ma.person_ID
-        #     AND Match(p.first_name, p.last_name) AGAINST(\"{string_to_search}\" IN BOOLEAN MODE)
-        # GROUP BY m.movie_ID, m.title
-        # ORDER BY num_of_actors DESC"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
+        if sub_string:
+            string_to_search = string_to_search + "*"
+
+        query = f"""
+        SELECT m.movie_ID, m.title, COUNT(*) as num_of_actors, 
+            GROUP_CONCAT(concat(p.first_name, " "), p.last_name SEPARATOR ", ")
+        FROM Movies m, Movies_Actors ma, Person p
+        WHERE m.movie_ID = ma.movie_ID AND p.person_ID = ma.person_ID
+            AND Match(p.first_name, p.last_name) AGAINST("{string_to_search}" IN BOOLEAN MODE)
+        GROUP BY m.movie_ID, m.title
+        ORDER BY num_of_actors DESC
+        """
+
+        rows = self.execute_sql(query)
+        return rows
 
     # endregion
 
