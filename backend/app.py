@@ -88,20 +88,25 @@ def moviegrid():
 def fun_facts():
     fact = request.args.get('fact')
     if type(fact) is str:
+        is_form_sent = False
+        is_submitted = request.form.get('submit')
         if fact == 'couples':
-            is_form_sent = False
-            is_submitted = request.form.get('submit')
-            print('HERE1')
             if type(is_submitted) is str:
-                print('HERE2')
                 if is_submitted == 'submit':
-                    print('HERE3')
                     is_form_sent = True
                     num_of_common_movies = int(request.form.get('number_of_common_movies'))
                     genres = str(request.form.get('number_of_common_movies'))
                     genres_lst = genres.split(',')
                     genres_lst = [x.strip() for x in genres_lst]
             return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db())
+        elif fact == 'popular_directors':
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    budget = int(request.form.get('budget'))
+                    num_of_actors = int(request.form.get('num_of_actors'))
+            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent)
+
 
     return render_template('facts.html')
 
