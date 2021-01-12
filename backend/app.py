@@ -29,7 +29,6 @@ def create_movie_body():
                 minimum_rating = request.form.get('minimum_rating')
                 from_year = request.form.get('from_year')
                 to_year = request.form.get('to_year')
-                print("AAA")
                 is_search = True
     if is_search:
         movies = db.movies_with_string_in_name_query(movie_title, int(minimum_rating)*10,
@@ -111,12 +110,14 @@ def fun_facts():
                 if is_submitted == 'submit':
                     is_form_sent = True
                     num_of_common_movies = int(request.form.get('number_of_common_movies'))
-                    genres = str(request.form.get('number_of_common_movies'))
+                    genres = str(request.form.get('genres'))
                     genres_lst = genres.split(',')
                     genres_lst = [x.strip() for x in genres_lst]
 
                     res = db.director_actor_coupling_query(num_of_common_movies, genres_lst)
-            return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res)
+            return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res,
+                                   director_pic=3, director_first_name=1, director_last_name=2,
+                                   actor_pic=7, actor_first_name=5, actor_last_name=6, co_operations=8, user_genres=9)
         elif fact == 'popular_directors':
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
@@ -130,7 +131,11 @@ def fun_facts():
                         num_of_actors = '0'
                     num_of_actors = int(num_of_actors)
                     res = db.directors_movies_budget_query(budget, num_of_actors)
-            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent, res=res)
+# director_picture director_first_name director_last_name movie_ID movie_poster title num_of_actors total_budget
+            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent, res=res,
+                                   director_picture=3, director_first_name=1, director_last_name=2,
+                                   movie_ID=0, movie_poster=9, title=5, num_of_actors=6, total_budget=8, budget=7,
+                                   movie_index=10, movie_max_index=11)
         elif fact == 'countries_movies':
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
@@ -144,9 +149,10 @@ def fun_facts():
                         num_of_awards = '0'
                     num_of_awards = int(num_of_awards)
                     res = db.countries_movies_query(budget, num_of_awards)
-            return render_template('facts_countries_movies.html', is_form_sent=is_form_sent, res=res)
+            return render_template('facts_countries_movies.html', is_form_sent=is_form_sent, res=res,
+                                   movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4)
 
-
+# movie_poster movie_ID title country budget awards
     return render_template('facts.html')
 
 

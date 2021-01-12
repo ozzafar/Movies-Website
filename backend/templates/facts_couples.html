@@ -9,14 +9,14 @@
 				<div class="celebrity-items">
 					{% for row in res %}
 					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_pic]}}" alt=""></a>
+						<a href="#"><img src="https://image.tmdb.org/t/p/w300{{row[director_pic]}}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
 							<span>director</span>
 						</div>
 					</div>
 					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[actor_pic]}}" alt=""></a>
+						<a href="#"><img src="https://image.tmdb.org/t/p/w300{{row[actor_pic]}}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[actor_first_name]}} {{row[actor_last_name]}}</a></h2>
 							<span>actor</span>
@@ -25,7 +25,7 @@
 					<div class="ceb-item">
 						<div class="ceb-infor">
 							<p><span>Number of common movies: {{row[co_operations]}}</span></p>
-							<p><span>Genres:</span>{{row[genres]|safe}}</p>
+							<p><span>Genres:</span><br>{{row[user_genres]|safe}}</p>
 						</div>
 					</div>
 					{% endfor %}

@@ -8,6 +8,8 @@ class IndexMovie:
         self._title = title
         self._poster = "https://image.tmdb.org/t/p/w300/" + poster
         self._categoryList = categories_list
+        if avg_rating is None:
+            avg_rating = -10
         self._rating = "%.1f" % round(avg_rating/10, 1)
 
     def get_html_body(self):
@@ -62,6 +64,8 @@ class MovieInfo:
         self._title = title
         self._poster = "https://image.tmdb.org/t/p/w300/" + poster
         self._categoryList = categories_list
+        if avg_rating is None:
+            avg_rating = -10
         self._rating = "%.1f" % round(avg_rating/10, 1)
 
     def get_html_body(self):

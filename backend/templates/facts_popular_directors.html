@@ -3,19 +3,27 @@
         <div class="row ipad-width">
 			<div class="col-md-8 col-sm-12 col-xs-12">
                 {% if is_form_sent %}
+
 				<div class="topbar-filter">
 					<p style="padding-right: 300px;">Found <span>1,000 movies</span> in total</p>
 				</div>
 				<div class="flex-wrap-movielist">
 					{% for row in res %}
+                            {% if row[budget]|int>=1000000 %}
+                                {% set bdgt = ((row[budget]|int / 1000000)|int)|string + "M" %}
+                            {% endif %}
+                            {% if row[total_budget]|int>=1000000 %}
+                                {% set ttl_bdgt = ((row[total_budget]|int / 1000000)|int)|string + "M" %}
+                            {% endif %}
 					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_picture]}}" alt=""></a>
+						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_picture]}}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
 						</div>
 					</div>
 					<div class="ceb-item">
-						<a href="moviesingle?movie={{row[movie_ID]}}"><img src="https://image.tmdb.org/t/p/w1280/{{row[movie_poster]}}" alt=""></a>
+						<a href="moviesingle?movie={{row[movie_ID]}}"><img src="https://image.tmdb.org/t/p/w1280/{{row[movie_poster]}}" alt=""
+                                                                           width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h2>
 						</div>
@@ -23,8 +31,9 @@
 					<div class="ceb-item">
 						<div class="ceb-infor">
 							<p><span>Number of actors: {{row[num_of_actors]}}</span></p>
-							<p><span>Budget: {{row[budget]}}</span></p>
-							<p><span>Total budget: {{row[total_budget]}}</span></p>
+							<p><span>Budget: {{bdgt}}</span></p>
+							<p><span>Total budget: {{ttl_bdgt}}</span></p>
+                            <p><span>Movie no.: {{row[movie_index]}} out of {{row[movie_max_index]}}</span></p>
 						</div>
 					</div>
 					{% endfor %}

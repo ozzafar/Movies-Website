@@ -268,7 +268,7 @@ class DBbackend:
 
         query = f"""
         SELECT director_ID, director_first_name, director_last_name, director_pic, actor_ID, actor_first_name, 
-            actor_last_name, actor_pic, SUM(co_operations) AS co_operations, GROUP_CONCAT(genre SEPARATOR ", ") AS genres
+            actor_last_name, actor_pic, SUM(co_operations) AS co_operations, GROUP_CONCAT(genre SEPARATOR "<br>") AS user_genres
         FROM Director_Actor_Genre_NumOfMovies dagm
         WHERE ({user_genres_string})
         GROUP BY director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, actor_last_name
@@ -285,16 +285,18 @@ class DBbackend:
         query = f"""
         SELECT t.person_ID, t.first_name AS director_first_name, t.last_name AS director_last_name,
             t.picture_URL AS director_picture, t.movie_ID, t.title, t.num_of_actors, t.budget, t.total_budget,
-            t.poster_URL AS movie_poster
+            t.poster_URL AS movie_poster, t.movie_index, t.max_index
         FROM (
             SELECT person_ID, first_name, last_name, title, num_of_actors, budget, picture_URL, poster_URL,
                 movie_ID, 
-                SUM(budget) OVER (PARTITION BY person_ID, first_name, last_name, picture_URL) total_budget
+                SUM(budget) OVER (PARTITION BY person_ID, first_name, last_name, picture_URL) total_budget,
+                ROW_NUMBER() OVER (PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC) movie_index,
+                COUNT(*) OVER (PARTITION BY person_ID, first_name, last_name, picture_URL) max_index
             FROM Movie_numOfActors_Director mad
             WHERE mad.num_of_actors >={actors_number}
           ) t
         WHERE t.total_budget>={budget}
-        ORDER BY director_first_name, director_last_name
+        ORDER BY director_first_name, director_last_name, budget DESC
         """
 
         rows = self.execute_sql(query)
@@ -334,7 +336,7 @@ class DBbackend:
                         AND m.budget >= {movie_budget} AND m.awards >= {movie_awards}
             ) cmn
         WHERE cmn.ranked_budget <= 10 # for each country return only 10 countries
-        ORDER BY cmn.country, cmn.budget, cmn.awards
+        ORDER BY cmn.country, cmn.awards DESC, cmn.budget DESC
         """
 
         rows = self.execute_sql(query)
@@ -363,19 +365,30 @@ class DBbackend:
     # Movies Grid
     def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genres, start_year,
                                          end_year, sub_string=False):
-        if sub_string:
-            string_to_search = string_to_search + "*"
+        string_to_search_arr = string_to_search.split(" ")
+        if len(string_to_search_arr) == 1:
+            string_to_search = "+" + string_to_search
+            if sub_string:
+                string_to_search = string_to_search + "*"
+        else:
+            for i,string in enumerate(string_to_search_arr):
+                string_to_search_arr[i] = "+" + string_to_search_arr[i]
+                if sub_string:
+                    string_to_search_arr[i] = string_to_search_arr[i] + "*"
+            string_to_search = " ".join(string_to_search_arr)
+
 
         user_genres_string = self.parse_genres("g", user_genres)
 
         query = f"""
-        SELECT m.movie_ID, m.title, g.genre, (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity, m.poster_URL
+        SELECT m.movie_ID, m.title, GROUP_CONCAT(g.genre), (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity, m.poster_URL
         FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g
         WHERE Match(m.title) AGAINST("{string_to_search}" IN BOOLEAN MODE)
               AND m.movie_ID = ms.movie_ID
               AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
               AND m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID AND ({user_genres_string})
               AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
+        GROUP BY m.movie_ID, m.title, popularity, m.poster_URL
         ORDER BY popularity DESC
         """
         rows = self.execute_sql(query)
