@@ -139,12 +139,13 @@
 								<div class="col-md-12 form-it">
 									<label>Genres</label>
 									<div class="group-ip">
-										<select name="genres" multiple="" class="ui fluid dropdown" id="selected_genres">
+										<select name="genres_select" multiple="" class="ui fluid dropdown" id="selected_genres">
 											<option value="">Choose genres</option>
 											{% for genre in genres %}
 											<option value="{{genre}}">{{genre}}</option>
 											{% endfor %}
 										</select>
+										<input type="hidden" name="genres" value="" id="selected_genres_hidden">
 									</div>
 								</div>
 								<div class="col-md-12 form-it">
@@ -210,6 +211,9 @@
 	function validate_form() {
 		var num_of_selected_genres = $('#selected_genres option:selected').length;
 		if (num_of_selected_genres > 0) {
+			let vals = $('#selected_genres').val();
+			let values = vals.join(',');
+			document.getElementById("selected_genres_hidden").value = values;
 			return true;
 		}
 		alert('You must choose at least one genre');
