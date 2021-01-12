@@ -1,0 +1,73 @@
+{% extends "facts.html" %}
+{% block content %}
+        <div class="row ipad-width">
+			<div class="col-md-8 col-sm-12 col-xs-12">
+                {% if is_form_sent %}
+				<div class="topbar-filter">
+					<p style="padding-right: 300px;">Found <span>1,000 movies</span> in total</p>
+				</div>
+				<div class="flex-wrap-movielist">
+					{% for row in res %}
+					<div class="ceb-item">
+						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_picture]}}" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="moviesingle?movie={{row[movie_ID]}}"><img src="https://image.tmdb.org/t/p/w1280/{{row[movie_poster]}}" alt=""></a>
+						<div class="ceb-infor">
+							<h2><a href="moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h2>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<div class="ceb-infor">
+							<p><span>Number of actors: {{row[num_of_actors]}}</span></p>
+							<p><span>Budget: {{row[budget]}}</span></p>
+							<p><span>Total budget: {{row[total_budget]}}</span></p>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				<div class="topbar-filter">
+					<div class="pagination2" style="line-height: 2em; padding-left: 50px;">
+						<span>Page 1 of 50:</span>
+						<a class="active" href=?page=2>1</a>
+						<a href="?page=2">2</a>
+						<a href="?page=3">3</a>
+						<a href="#">...</a>
+						<a href="#">49</a>
+						<a href="#">50</a>
+						<a href="#"><i class="ion-arrow-right-b"></i></a>
+					</div>
+				</div>
+                {% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12">
+				<div class="sidebar">
+					<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1" action="" method="post">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>Budget</label>
+									<input type="text" name="budget" placeholder="Enter budget">
+								</div>
+								<div class="col-md-12 form-it">
+									<label>Number of actors</label>
+									<input type="text" name="num_of_actors" placeholder="Enter a number">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}
