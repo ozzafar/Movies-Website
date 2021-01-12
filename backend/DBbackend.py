@@ -257,7 +257,7 @@ class DBbackend:
             AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
 
         GROUP BY p.person_ID, p.first_name, p.last_name, p.picture_URL
-        ORDER BY amount_of_movies DESC"
+        ORDER BY amount_of_movies DESC
         """
 
         rows = self.execute_sql(query)
@@ -269,7 +269,7 @@ class DBbackend:
 
         query = f"""
         SELECT director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, actor_last_name,
-            SUM(co_operations) AS co_operations, GROUP_CONCAT(genre SEPARATOR ", ") AS genres
+            SUM(co_operations) AS co_operations, GROUP_CONCAT(genre SEPARATOR "<br>") AS genres
         FROM Director_Actor_Genre_NumOfMovies dagm
         WHERE ({user_genres_string})
         GROUP BY director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, actor_last_name
