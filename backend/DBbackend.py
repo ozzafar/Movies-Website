@@ -362,11 +362,12 @@ class DBbackend:
     # TODO - ask dvir if he wants to make it available to choose soome categories or just (one or all)
     # TODO either way need to handle the oprion of "ALL"
     # Movies Grid
-    def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genre, start_year,
+    def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genres, start_year,
                                          end_year, sub_string=False):
-
         if sub_string:
             string_to_search = string_to_search + "*"
+
+        user_genres_string = self.parse_genres("g", user_genres)
 
         query = f"""
         SELECT m.title, g.genre, (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity
@@ -374,7 +375,7 @@ class DBbackend:
         WHERE Match(m.title) AGAINST("{string_to_search}" IN BOOLEAN MODE)
               AND m.movie_ID = ms.movie_ID
               AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
-              AND m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID AND g.genre = {user_genre}
+              AND m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID AND ({user_genres_string})
               AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
         ORDER BY popularity DESC
         """
