@@ -7,70 +7,30 @@
 					<p class="pad-change" style="padding-right: 370px;">Found <span>1,608 celebrities</span> in total</p>
 				</div>
 				<div class="celebrity-items">
+					{% for row in res %}
 					<div class="ceb-item">
-						<a href="celebritysingle.html"><img src="static/images/uploads/ceb1.jpg" alt=""></a>
+						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_pic]}}" alt=""></a>
 						<div class="ceb-infor">
-							<h2><a href="celebritylist.html">Tom Hardy</a></h2>
-							<span>director, usa</span>
+							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
+							<span>director</span>
 						</div>
 					</div>
 					<div class="ceb-item">
-						<a href="celebritylist.html"><img src="static/images/uploads/ceb2.jpg" alt=""></a>
+						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[actor_pic]}}" alt=""></a>
 						<div class="ceb-infor">
-							<h2><a href="celebritylist.html">Leonardo DiCaprio</a></h2>
-							<span>actor, mexico</span>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<div class="ceb-infor">
-							<p><span>Number of common movies: 200</span></p>
-							<p><span>Genres:</span><br>Action<br>Drama<br>Family<br>Adventure</p>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<a href="celebritysingle.html"><img src="static/images/uploads/ceb1.jpg" alt=""></a>
-						<div class="ceb-infor">
-							<h2><a href="celebritylist.html">Tom Hardy</a></h2>
-							<span>director, usa</span>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<a href="celebritylist.html"><img src="static/images/uploads/ceb2.jpg" alt=""></a>
-						<div class="ceb-infor">
-							<h2><a href="celebritylist.html">Leonardo DiCaprio</a></h2>
-							<span>actor, mexico</span>
+							<h2><a href="#">{{row[actor_first_name]}} {{row[actor_last_name]}}</a></h2>
+							<span>actor</span>
 						</div>
 					</div>
 					<div class="ceb-item">
 						<div class="ceb-infor">
-							<p><span>Number of common movies: 200</span></p>
-							<p><span>Genres:</span><br>Action<br>Drama<br>Family<br>Adventure</p>
+							<p><span>Number of common movies: {{row[co_operations]}}</span></p>
+							<p><span>Genres:</span>{{row[genres]|safe}}</p>
 						</div>
 					</div>
-					<div class="ceb-item">
-						<a href="celebritysingle.html"><img src="static/images/uploads/ceb1.jpg" alt=""></a>
-						<div class="ceb-infor">
-							<h2><a href="celebritylist.html">Tom Hardy</a></h2>
-							<span>director, usa</span>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<a href="celebritylist.html"><img src="static/images/uploads/ceb2.jpg" alt=""></a>
-						<div class="ceb-infor">
-							<h2><a href="celebritylist.html">Leonardo DiCaprio</a></h2>
-							<span>actor, mexico</span>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<div class="ceb-infor">
-							<p><span>Number of common movies: 200</span></p>
-							<p><span>Genres:</span><br>Action<br>Drama<br>Family<br>Adventure</p>
-						</div>
-					</div>
+					{% endfor %}
 				</div>
 				<div class="topbar-filter">
-
-
 					<div class="pagination2">
 						<span>Page 1 of 6:</span>
 						<a class="active" href="celebritygrid?page=1">1</a>

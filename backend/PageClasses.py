@@ -3,7 +3,8 @@ import html
 class IndexMovie:
     _color_num = 0
 
-    def __init__(self, title, poster, categories_list, avg_rating):
+    def __init__(self, title, poster, categories_list, avg_rating, movie_id):
+        self._movie_id = movie_id
         self._title = title
         self._poster = "https://image.tmdb.org/t/p/w300/" + poster
         self._categoryList = categories_list
@@ -17,7 +18,7 @@ class IndexMovie:
                 <a href="#"><img src="""+self._poster+""" alt="" width="285" height="437"></a>
             </div>
             <div class="title-in">
-	    		<div class="cate"> """  # TODO change <a href="#"> to go to its page
+	    		<div class="cate"> """
 
         for i in range(len(self._categoryList)):
             body += "<span class="+colors[IndexMovie._color_num]+">"+self._categoryList[i]+"</span>"
@@ -25,10 +26,10 @@ class IndexMovie:
 
         body += """
                 </div>
-                <h6><a href="#">"""+self._title+"""</a></h6>
+                <h6><a href="/moviesingle?movie="""+str(self._movie_id)+""""">"""+self._title+"""</a></h6>
                 <p><i class="ion-android-star"></i><span>"""+self._rating+"""</span> /10</p>
             </div>
-        </div> """  # TODO change <a href="#"> to go to its page
+        </div> """
 
         return html.unescape(body)
 

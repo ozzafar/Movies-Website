@@ -1,6 +1,6 @@
 {% extends "facts.html" %}
 {% block content %}
-        <div class="row ipad-width">
+		<div class="row ipad-width">
 			<div class="col-md-8 col-sm-12 col-xs-12">
                 {% if is_form_sent %}
 				<div class="topbar-filter">
@@ -8,26 +8,17 @@
 				</div>
 				<div class="flex-wrap-movielist">
 					{% for row in res %}
-					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_picture]}}" alt=""></a>
-						<div class="ceb-infor">
-							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<a href="moviesingle?movie={{row[movie_ID]}}"><img src="https://image.tmdb.org/t/p/w1280/{{row[movie_poster]}}" alt=""></a>
-						<div class="ceb-infor">
-							<h2><a href="moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h2>
-						</div>
-					</div>
-					<div class="ceb-item">
-						<div class="ceb-infor">
-							<p><span>Number of actors: {{row[num_of_actors]}}</span></p>
-							<p><span>Budget: {{row[budget]}}</span></p>
-							<p><span>Total budget: {{row[total_budget]}}</span></p>
-						</div>
-					</div>
-					{% endfor %}
+                    <div class="movie-item-style-2 movie-item-style-1">
+                        <img src="https://image.tmdb.org/t/p/w1280{{row[movie_poster]}}" alt="">
+                        <div class="hvr-inner">
+                            <a  href="/moviesingle?movie={{row[movie_ID]}}"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                        </div>
+                        <div class="mv-item-infor">
+                            <h6><a href="/moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h6>
+                            <p class="rate">{{row[country]}}<br>{{row[budget]}} $<br>Number of awards: {{row[awards]}}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
 				</div>
 				<div class="topbar-filter">
 					<div class="pagination2" style="line-height: 2em; padding-left: 50px;">
@@ -58,8 +49,8 @@
 									<input type="text" name="budget" placeholder="Enter budget">
 								</div>
 								<div class="col-md-12 form-it">
-									<label>Number of actors</label>
-									<input type="text" name="num_of_actors" placeholder="Enter a number">
+									<label>Number of awards</label>
+									<input type="text" name="num_of_awards" placeholder="Enter a number">
 								</div>
 								<div class="col-md-12 ">
 									<input class="submit" type="submit" name="submit" value="submit">

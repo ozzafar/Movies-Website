@@ -123,7 +123,7 @@
 				<div class="sidebar">
 					<div class="searh-form">
 						<h4 class="sb-title">Search for movie</h4>
-						<form class="form-style-1" action="" method="post">
+						<form class="form-style-1" action="" method="post" onsubmit="return validate_form();">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Search type</label>
@@ -139,7 +139,7 @@
 								<div class="col-md-12 form-it">
 									<label>Genres</label>
 									<div class="group-ip">
-										<select name="genres" multiple="" class="ui fluid dropdown">
+										<select name="genres" multiple="" class="ui fluid dropdown" id="selected_genres">
 											<option value="">Choose genres</option>
 											{% for genre in genres %}
 											<option value="{{genre}}">{{genre}}</option>
@@ -206,7 +206,16 @@
 <script src="static/js/plugins.js"></script>
 <script src="static/js/plugins2.js"></script>
 <script src="static/js/custom.js"></script>
-
+<script type="text/javascript">
+	function validate_form() {
+		var num_of_selected_genres = $('#selected_genres option:selected').length;
+		if (num_of_selected_genres > 0) {
+			return true;
+		}
+		alert('You must choose at least one genre');
+		return false;
+	}
+</script>
 </body>
 
 

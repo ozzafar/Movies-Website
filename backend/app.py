@@ -90,6 +90,7 @@ def fun_facts():
     if type(fact) is str:
         is_form_sent = False
         is_submitted = request.form.get('submit')
+        res = ''
         if fact == 'couples':
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
@@ -98,7 +99,9 @@ def fun_facts():
                     genres = str(request.form.get('number_of_common_movies'))
                     genres_lst = genres.split(',')
                     genres_lst = [x.strip() for x in genres_lst]
-            return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db())
+
+                    res = db.director_actor_coupling_query(num_of_common_movies, genres_lst)
+            return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res)
         elif fact == 'popular_directors':
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
@@ -111,7 +114,22 @@ def fun_facts():
                     if num_of_actors == '':
                         num_of_actors = '0'
                     num_of_actors = int(num_of_actors)
-            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent)
+                    res = db.directors_movies_budget_query(budget, num_of_actors)
+            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent, res=res)
+        elif fact == 'countries_movies':
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    budget = request.form.get('budget')
+                    if budget == '':
+                        budget = '0'
+                    budget = int(budget)
+                    num_of_awards = request.form.get('num_of_awards')
+                    if num_of_awards == '':
+                        num_of_awards = '0'
+                    num_of_awards = int(num_of_awards)
+                    res = db.countries_movies_query(budget, num_of_awards)
+            return render_template('facts_countries_movies.html', is_form_sent=is_form_sent, res=res)
 
 
     return render_template('facts.html')
