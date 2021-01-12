@@ -369,7 +369,7 @@ class DBbackend:
         user_genres_string = self.parse_genres("g", user_genres)
 
         query = f"""
-        SELECT m.title, g.genre, (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity
+        SELECT m.movie_ID, m.title, g.genre, (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity, m.poster_URL
         FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g
         WHERE Match(m.title) AGAINST("{string_to_search}" IN BOOLEAN MODE)
               AND m.movie_ID = ms.movie_ID

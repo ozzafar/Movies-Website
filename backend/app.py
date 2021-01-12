@@ -9,7 +9,8 @@ app = Flask(__name__)
 db = DBbackend()
 
 def create_movie_body():
-    movies = db.get_movies_ratings()
+    is_search = False
+
     body = ""
     page = request.args.get('page')
     if type(page) is str:
@@ -28,15 +29,29 @@ def create_movie_body():
                 minimum_rating = request.form.get('minimum_rating')
                 from_year = request.form.get('from_year')
                 to_year = request.form.get('to_year')
+                print("AAA")
+                is_search = True
+    if is_search:
+        movies = db.movies_with_string_in_name_query(movie_title, int(minimum_rating)*10,
+                    genres.split(","), int(from_year), int(to_year), sub_string=(exact_match == "contains"))
+        poster_url_index = 4
+        id_index = 0
+        name_index = 1
+        rating_index = 3
+    else:
+        movies = db.get_movies_ratings()
+        poster_url_index = 9
+        id_index = 0
+        name_index = 1
+        rating_index = 18
 
-
-    for i in range(20 * (page - 1), 20 * page):
-        poster_url = movies[i][9]
+    for i in range(20 * (page - 1), min(len(movies), 20 * page)):
+        poster_url = movies[i][poster_url_index]
         if poster_url != None:
-            poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][9]
-            id = str(movies[i][0])
-            name = movies[i][1]
-            rating = str(movies[i][18] / 10)[:3]
+            poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][poster_url_index]
+            id = str(movies[i][id_index])
+            name = movies[i][name_index]
+            rating = str(movies[i][rating_index] / 10)[:3]
             body += (f"""
             		<div class="movie-item-style-2 movie-item-style-1">
 						<img src={poster_url_full} alt="">
