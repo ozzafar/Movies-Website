@@ -119,6 +119,7 @@ def fun_facts():
                                    director_pic=3, director_first_name=1, director_last_name=2,
                                    actor_pic=7, actor_first_name=5, actor_last_name=6, co_operations=8, user_genres=9)
         elif fact == 'popular_directors':
+            # TODO add <br> every 18 chars in long movie/people names
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True

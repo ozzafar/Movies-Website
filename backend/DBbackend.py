@@ -293,7 +293,7 @@ class DBbackend:
                 ROW_NUMBER() OVER (PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC) movie_index,
                 COUNT(*) OVER (PARTITION BY person_ID, first_name, last_name, picture_URL) max_index
             FROM Movie_numOfActors_Director mad
-            WHERE mad.num_of_actors >={actors_number}
+            WHERE mad.num_of_actors >={actors_number} AND mad.budget>=10000 # TODO delete last condition
           ) t
         WHERE t.total_budget>={budget}
         ORDER BY director_first_name, director_last_name, budget DESC
