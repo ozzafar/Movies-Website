@@ -45,9 +45,15 @@ class DBbackend:
 
     # region INSERT
 
-    def insert_movie(self, mv):
+    def insert_rated(self, rated_id, rated):
+        sql = "INSERT INTO Rated (rated_ID,rated) VALUES (%s,%s)"
+        values = (rated_id, rated)
+        self.execute_sql(sql, values)
+
+
+    def insert_movie(self, mv, awards):
         cursor = self.cnx.cursor()  # get the cursor
-        sql = "INSERT INTO Movies (movie_ID,title,released,run_time,plot,budget,revenue,poster_URL,trailer_URL) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        sql = "INSERT INTO Movies (movie_ID,title,released,run_time,plot,budget,revenue,poster_URL,trailer_URL,awards) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         runtime = mv.runtime
         if runtime is not None:
             runtime = '{:02d}:{:02d}'.format(*divmod(mv.runtime, 60))
@@ -75,16 +81,14 @@ class DBbackend:
                 trailer = trailer[0]["source"]
             else:
                 trailer = None
-        values = (mv.id, mv.title, release_date, runtime, overview, budget, revenue, poster, trailer)
+        values = (mv.id, mv.title, release_date, runtime, overview, budget, revenue, poster, trailer, awards)
         cursor.execute(sql, values)
         self.cnx.commit()
 
     def insert_rating(self, rating):
-        cursor = self.cnx.cursor()  # get the cursor
         sql = "INSERT INTO Rated (rated) VALUES (%s)"
         values = (rating,)
-        cursor.execute(sql, values)
-        self.cnx.commit()
+        self.execute_sql(sql, values)
 
     def insert_genre(self, g):
         sql = "INSERT INTO Genres (genre) VALUES (%s)"
@@ -150,9 +154,9 @@ class DBbackend:
         values = (url, id)
         self.execute_sql(sql, values)
 
-    def update_movie(self, m_id, awards, rated):
-        sql = "UPDATE Movies SET awards=%s, rated_ID=%s WHERE movie_ID = %s"
-        values = (awards, rated, m_id)
+    def update_movie(self, m_id, rated):
+        sql = "UPDATE Movies SET rated_ID=%s WHERE movie_ID = %s"
+        values = (rated, m_id)
         self.execute_sql(sql, values)
 
     # endregion
@@ -527,3 +531,4 @@ class DBbackend:
         return actors
 
     #endregion
+

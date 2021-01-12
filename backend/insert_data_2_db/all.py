@@ -48,7 +48,7 @@ countries = """[{"iso_3166_1":"AD","english_name":"Andorra"},{"iso_3166_1":"AE",
 #     for mv in movies:
 #         try:
 #             mv = movie.details(mv.id)
-#             db.insert_movie(mv)
+#             db.insert_movie(mv,get_awards(mv.title))
 #         except Exception as e:
 #             print(e)
 #             errors += 1
@@ -61,18 +61,9 @@ moviesss = db.get_movie_ids()
 for i in range(len(moviesss)):
     m = movie.details(moviesss[i][0])
 
-    # -------------------- Update Movies From OMDB + Score--------------------
+    # -------------------- Score --------------------
 
     # try:
-    #     m2 = GetMovie(title=m.title, api_key=omdb_api_key)
-    #     tmp = m2.values['Awards']
-    #     if "wins" in tmp:
-    #         tmp = tmp.split()
-    #         wins = tmp[tmp.index("wins")-1]
-    #         if wins.isnumeric():
-    #             wins = int(wins)
-    #             db.update_movie(m.id, wins)
-    #
     #     tomatoes = None
     #     for s in m2.values["Ratings"]:
     #         if s["Source"] == "Rotten Tomatoes":
@@ -86,9 +77,8 @@ for i in range(len(moviesss)):
     #     rated = None
     #     if "Rated" in m2.values and m2.values["Rated"] != "N/A":
     #         rated = rateds[m2.values["Rated"]]
-    #     db.update_movie(m.id, None, rated)
+    #     db.update_movie_rated(m.id, rated)
     # except Exception as e:
-    #     # db.update_movie(m.id, 0)
     #     print(e)
     #     errors += 1
 
@@ -202,3 +192,13 @@ for i in range(len(moviesss)):
 print("finished insert all movies, total errors number: " + str(errors))
 
 db.close()
+
+def get_awards(title):
+    m2 = GetMovie(title=title, api_key=omdb_api_key)
+    tmp = m2.values['Awards']
+    if "wins" in tmp:
+        tmp = tmp.split()
+        wins = tmp[tmp.index("wins")-1]
+        if wins.isnumeric():
+            return int(wins)
+    return 0
