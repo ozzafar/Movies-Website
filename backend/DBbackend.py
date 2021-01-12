@@ -2,7 +2,6 @@ import mysql.connector
 from mysql.connector import errorcode
 from config import *
 
-
 MIN_YEAR = 1900
 MAX_YEAR = 2100
 ALL = "*"
