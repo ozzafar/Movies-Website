@@ -15,14 +15,27 @@
                             {% if row[total_budget]|int>=1000000 %}
                                 {% set ttl_bdgt = ((row[total_budget]|int / 1000000)|int)|string + "M" %}
                             {% endif %}
+
+                            {% if row[director_picture_URL] is none %}
+                                {% set director_picture = "/static/images/no_photo_availble.png" %}
+                            {% else %}
+                                {% set director_picture = "https://image.tmdb.org/t/p/w300" + row[director_picture_URL]|string %}
+                            {% endif %}
+
+                            {% if row[movie_poster] is none %}
+                                {% set movie_picture = "/static/images/no_photo_availble.png" %}
+                            {% else %}
+                                {% set movie_picture = "https://image.tmdb.org/t/p/w1280" + row[movie_poster]|string %}
+                            {% endif %}
+
 					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300/{{row[director_picture]}}" alt="" width="300" height="450"></a>
+						<a href="#"><img src="{{ director_picture }}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
 						</div>
 					</div>
 					<div class="ceb-item">
-						<a href="moviesingle?movie={{row[movie_ID]}}"><img src="https://image.tmdb.org/t/p/w1280/{{row[movie_poster]}}" alt=""
+						<a href="moviesingle?movie={{row[movie_ID]}}"><img src="{{movie_picture}}" alt=""
                                                                            width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h2>
@@ -38,18 +51,7 @@
 					</div>
 					{% endfor %}
 				</div>
-				<div class="topbar-filter">
-					<div class="pagination2" style="line-height: 2em; padding-left: 50px;">
-						<span>Page 1 of 50:</span>
-						<a class="active" href=?page=2>1</a>
-						<a href="?page=2">2</a>
-						<a href="?page=3">3</a>
-						<a href="#">...</a>
-						<a href="#">49</a>
-						<a href="#">50</a>
-						<a href="#"><i class="ion-arrow-right-b"></i></a>
-					</div>
-				</div>
+
                 {% else %}
 				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
 					Please fill the form on the right

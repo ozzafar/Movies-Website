@@ -102,42 +102,56 @@
 		<div class="row ipad-width2">
 			<div class="col-md-9 col-sm-12 col-xs-12">
 				<div class="topbar-filter">
-					<p class="pad-change" style="padding-right: 370px;">Found <span>1,608 celebrities</span> in total</p>
+					<p class="pad-change" style="padding-right: 370px;">Found <span>{{ res|length }} celebrities</span> in total {{ user_search }}</p>
 				</div>
 				<div class="celebrity-items">
-					{{body|safe}}
-				</div>
-				<div class="topbar-filter">
-
-					
-					<div class="pagination2">
-						<span>Page {{page}} of 6:</span>
-						<a class="active" href="celebritygrid?page=1">1</a>
-						<a href="celebritygrid?page=2">2</a>
-						<a href="celebritygrid?page=3">3</a>
-						<a href="celebritygrid?page=4">4</a>
-						<a href="celebritygrid?page=5">5</a>
-						<a href="celebritygrid?page=6">6</a>
-						<a href="#"><i class="ion-arrow-right-b"></i></a>
-					</div>
+					{% for row in res %}
+                        {% if row[picture_URL] is none %}
+                            {% set picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set picture = "https://image.tmdb.org/t/p/w300" + row[picture_URL]|string %}
+                        {% endif %}
+                        <div class="ceb-item">
+                            <img src="{{ picture }}" width="270" height="400">
+                            <div class="ceb-infor">
+                                <h2>{{ row[first_name] }} {{ row[last_name] }}</h2>
+                                <span>Number of Movies: {{ row[num_of_movies] }}</span>
+                            </div>
+                        </div>
+					{% endfor %}
 				</div>
 			</div>
 			<div class="col-md-3 col-xs-12 col-sm-12">
 				<div class="sidebar">
 						<div class="searh-form">
 						<h4 class="sb-title">Search celebrity</h4>
-						<form class="form-style-1 celebrity-form" action="#">
+						<form class="form-style-1 celebrity-form" action="" method="post">
 							<div class="row">
 								<div class="col-md-12 form-it">
-									<label>Number of common movies:</label>
-									<input type="text" name="num_of_common_movies" placeholder="Enter a number">
+									<label>Minimum rating</label>
+									<select name="minimum_rating">
+										<option value="0">All</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+										<option value="9">9</option>
+									</select>
 								</div>
 								<div class="col-md-12 form-it">
-									<label>Genres</label>
-									<select>
-									  <option value="range">Actress</option>
-									  <option value="saab">Others</option>
-									</select>
+									<label>Release Year</label>
+									<div class="row">
+										<div class="col-md-6">
+											<input type="text" name="from_year" placeholder="From">
+										</div>
+										<div class="col-md-6">
+											<input type="text" name="to_year" placeholder="To">
+										</div>
+									</div>
 								</div>
 								<div class="col-md-12 ">
 									<input class="submit" type="submit" name="submit" value="submit">

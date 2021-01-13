@@ -8,15 +8,28 @@
 				</div>
 				<div class="celebrity-items">
 					{% for row in res %}
+
+                        {% if row[director_pic] is none %}
+                            {% set director_picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set director_picture = "https://image.tmdb.org/t/p/w1280" + row[director_pic]|string %}
+                        {% endif %}
+
+                        {% if row[actor_pic] is none %}
+                            {% set actor_picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set actor_picture = "https://image.tmdb.org/t/p/w1280" + row[actor_pic]|string %}
+                        {% endif %}
+
 					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300{{row[director_pic]}}" alt="" width="300" height="450"></a>
+						<a href="#"><img src="{{ director_picture }}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
 							<span>director</span>
 						</div>
 					</div>
 					<div class="ceb-item">
-						<a href="#"><img src="https://image.tmdb.org/t/p/w300{{row[actor_pic]}}" alt="" width="300" height="450"></a>
+						<a href="#"><img src="{{ actor_picture }}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[actor_first_name]}} {{row[actor_last_name]}}</a></h2>
 							<span>actor</span>
@@ -30,18 +43,7 @@
 					</div>
 					{% endfor %}
 				</div>
-				<div class="topbar-filter">
-					<div class="pagination2">
-						<span>Page 1 of 6:</span>
-						<a class="active" href="celebritygrid?page=1">1</a>
-						<a href="celebritygrid?page=2">2</a>
-						<a href="celebritygrid?page=3">3</a>
-						<a href="celebritygrid?page=4">4</a>
-						<a href="celebritygrid?page=5">5</a>
-						<a href="celebritygrid?page=6">6</a>
-						<a href="#"><i class="ion-arrow-right-b"></i></a>
-					</div>
-				</div>
+
 				{% else %}
 				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
 					Please fill the form on the right

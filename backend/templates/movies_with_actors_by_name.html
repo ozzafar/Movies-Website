@@ -1,0 +1,67 @@
+{% extends "facts.html" %}
+{% block content %}
+		<div class="row ipad-width2">
+			<div class="col-md-9 col-sm-12 col-xs-12">
+				{% if is_form_sent %}
+				<div class="topbar-filter">
+					<p class="pad-change" style="padding-right: 370px;">Found <span>1,608 celebrities</span> in total</p>
+				</div>
+				<div class="celebrity-items" style="padding-right: 150px">
+					{% for row in res %}
+                        {% set actors_list = row[actors_string].split(',') %}
+                        {% if row[poster_URL] is none %}
+                            {% set picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set picture = "https://image.tmdb.org/t/p/w1280" + row[poster_URL] %}
+                        {% endif %}
+
+					<div class="ceb-item">
+						<a href="#"><img src={{ picture }} alt="" width="300" height="450"></a>
+						<div class="ceb-infor">
+							<h2><a href="#">{{row[title]}}</a></h2>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<div class="ceb-infor">
+							<p><span>Number of actors: {{row[num_of_actors]}}</span></p>
+							<p><span>Actors:</span> {% for actor in actors_list %}
+                                                        <br>{{actor}}
+                                                    {% endfor %} </p>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+
+				{% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-3 col-xs-12 col-sm-12">
+				<div class="sidebar">
+						<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1 celebrity-form" action="" method="post">
+							<div class="row">
+                                <div class="col-md-12 form-it">
+                                    <label>Search type</label>
+                                    <select name="exact_match">
+                                        <option value="contains">Contains</option>
+                                        <option value="exact">Exact match</option>
+                                    </select>
+                                </div>
+								<div class="col-md-12 form-it">
+									<label>String to search</label>
+									<input type="text" name="string_to_search" placeholder="Enter keywords">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}

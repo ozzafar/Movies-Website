@@ -8,29 +8,28 @@
 				</div>
 				<div class="flex-wrap-movielist">
 					{% for row in res %}
+
+                        {% if row[movie_poster] is none %}
+                            {% set picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set picture = "https://image.tmdb.org/t/p/w1280" + row[movie_poster]|string %}
+                        {% endif %}
+
+                        {% if row[budget]|int>=1000000 %}
+                            {% set bdgt = ((row[budget]|int / 1000000)|int)|string + "M" %}
+                        {% endif %}
+
                     <div class="movie-item-style-2 movie-item-style-1">
-                        <img src="https://image.tmdb.org/t/p/w1280{{row[movie_poster]}}" alt="">
+                        <img src="{{ picture }}" alt="">
                         <div class="hvr-inner">
                             <a  href="/moviesingle?movie={{row[movie_ID]}}"> Read more <i class="ion-android-arrow-dropright"></i> </a>
                         </div>
                         <div class="mv-item-infor">
                             <h6><a href="/moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h6>
-                            <p class="rate">{{row[country]}}<br>{{row[budget]}} $<br>Number of awards: {{row[awards]}}</p>
+                            <p class="rate">{{row[country]}}<br>{{bdgt}} $<br>Number of awards: {{row[awards]}}</p>
                         </div>
                     </div>
                     {% endfor %}
-				</div>
-				<div class="topbar-filter">
-					<div class="pagination2" style="line-height: 2em; padding-left: 50px;">
-						<span>Page 1 of 50:</span>
-						<a class="active" href=?page=2>1</a>
-						<a href="?page=2">2</a>
-						<a href="?page=3">3</a>
-						<a href="#">...</a>
-						<a href="#">49</a>
-						<a href="#">50</a>
-						<a href="#"><i class="ion-arrow-right-b"></i></a>
-					</div>
 				</div>
                 {% else %}
 				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">

@@ -242,7 +242,7 @@ class DBbackend:
             AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
 
         GROUP BY p.person_ID, p.first_name, p.last_name, p.picture_URL
-        ORDER BY amount_of_movies DESC
+        ORDER BY amount_of_movies DESC, p.first_name, p.last_name
         """
 
         rows = self.execute_sql(query)
@@ -350,8 +350,8 @@ class DBbackend:
     def actors_movies_awards_query(self, start_year):
 
         query = f"""
-        SELECT p.first_name, p.last_name, p.gender, COUNT(*) AS number_of_movies_played ,
-        	SUM(m.awards) AS total_awards
+        SELECT p.person_ID, p.first_name, p.last_name, COUNT(*) AS number_of_movies_played ,
+        	SUM(m.awards) AS total_awards, p.picture_URL
         FROM Person p, Movies_Actors ma, Movies m
         WHERE p.person_ID = ma.person_ID AND ma.movie_ID = m.movie_ID
             AND EXTRACT(YEAR FROM m.released) > {start_year}
@@ -418,12 +418,22 @@ class DBbackend:
     # Fun Facts/Movies Grid
     def movies_actors_with_string_in_name_query(self, string_to_search, sub_string=False):
 
-        if sub_string:
-            string_to_search = string_to_search + "*"
+        string_to_search_arr = string_to_search.split(" ")
+        if len(string_to_search_arr) == 1:
+            string_to_search = "+" + string_to_search
+            if sub_string:
+                string_to_search = string_to_search + "*"
+        else:
+            for i, string in enumerate(string_to_search_arr):
+                string_to_search_arr[i] = "+" + string_to_search_arr[i]
+                if sub_string:
+                    string_to_search_arr[i] = string_to_search_arr[i] + "*"
+            string_to_search = " ".join(string_to_search_arr)
 
         query = f"""
         SELECT m.movie_ID, m.title, COUNT(*) as num_of_actors, 
-            GROUP_CONCAT(concat(p.first_name, " "), p.last_name SEPARATOR ", ")
+            GROUP_CONCAT(concat(p.first_name, " "), p.last_name SEPARATOR ", "),
+            m.poster_URL
         FROM Movies m, Movies_Actors ma, Person p
         WHERE m.movie_ID = ma.movie_ID AND p.person_ID = ma.person_ID
             AND (Match(p.first_name) AGAINST("{string_to_search}" IN BOOLEAN MODE) OR
