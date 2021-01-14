@@ -64,7 +64,7 @@
 						</li>
 						<li class="dropdown first">
 							<a href="/celebritygrid" class="btn btn-default lv1">
-								celebrities <i class="fa" aria-hidden="true"></i>
+								popular actors <i class="fa" aria-hidden="true"></i>
 							</a>
 						</li>
 						<li class="dropdown first">
@@ -86,14 +86,21 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="hero-ct">
-					<h1>celebrity listing</h1>
+					<h1>popular actors</h1>
 					<ul class="breadcumb">
 						<li class="active"><a href="#">Home</a></li>
-						<li> <span class="ion-ios-arrow-right"></span> celebrity listing</li>
+						<li> <span class="ion-ios-arrow-right"></span> popular actors</li>
 					</ul>
+
 				</div>
+                <div id="explain_area" style="background-color: white; border-radius: 20px; padding: 20px; margin-top:30px;">
+                    <p id="" style="color: black; margin: 0;'''selected''' ">
+                        Given a minimum rating (X) and range of years (Y1-Y2) the query returns actors who played in movies that were filmed in the years Y1-Y2 and got rating of X or above.
+                    </p>
+                </div>
 			</div>
 		</div>
+
 	</div>
 </div>
 <!-- celebrity grid v1 section-->
@@ -102,7 +109,7 @@
 		<div class="row ipad-width2">
 			<div class="col-md-9 col-sm-12 col-xs-12">
 				<div class="topbar-filter">
-					<p class="pad-change" style="padding-right: 370px;">Found <span>{{ res|length }} celebrities</span> in total {{ user_search }}</p>
+					<p class="pad-change" style="padding-right: 370px;">Found <span>{{ res|length }} popular actors</span> in total {{ user_search }}</p>
 				</div>
 				<div class="celebrity-items">
 					{% for row in res %}
