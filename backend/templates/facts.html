@@ -114,8 +114,8 @@
 							<option value="couples"{{couples[selected]}}>Couples of director and actor</option>
 							<option value="popular_directors"{{popular_directors[selected]}}>Popular directors</option>
 							<option value="countries_movies"{{countries_movies[selected]}}>Countries-Movies</option>
-                            <option value="actors_awards"{{actors_awards[selected]}}>Actors and number of awards they won</option>
-                            <option value="movies_with_actors_by_name"{{movies_with_actors_by_name[selected]}}>Movies with actors by name</option>
+                            <option value="actors_awards"{{actors_awards[selected]}}>Actors-Awards</option>
+                            <option value="movies_with_actors_by_name"{{movies_with_actors_by_name[selected]}}>Movies-Actors by Name</option>
 						</select>
 					</div>
 					<div id="explain_area" style="background-color: white; border-radius: 20px; padding: 20px; margin-top:30px;">
@@ -123,19 +123,26 @@
 							Waiting for choosing fun fact
 						</p>
 						<p id="couples" style="color: black; margin: 0;{{couples[display]}}">
-							bla
+                            Couples of Director and Actor Query<br><br>
+							Given number of movies (X) and list of genres (Y) the query returns couples of director-actor who did together more than X movies while each movie counted is under a genre that appears in Y. For each couple the query also returns the number of movies they did together and the genres of these movies (each genre coming from one or more movies)
 						</p>
 						<p id="popular_directors" style="color: black; margin: 0;{{popular_directors[display]}}">
-							bla bla
+                            Popular Directors Query<br><br>
+                            Given budget (X) and number of actors (Y) the query returns names of directors which the total budget of movies they did with Y actors or more is at least X, and the total budget. For each director in the list we also present the movies he directed with more than X actors and their budget.
 						</p>
 						<p id="countries_movies" style="color: black; margin: 0;{{countries_movies[display]}}">
-							bla bla bla
+							Countries-Movies Query <br><br>
+                            Given budget (X) and number of movie awards (Y) the query returns country-movie couples which the movie was filmed in this country, it’s budget was more than X and won at least Y awards.
 						</p>
                         <p id="actors_awards" style="color: black; margin: 0;{{actors_awards[display]}}">
-							bla bla bla bla
+							Actors-Awards Query<br><br>
+                            Given a year (X) the query returns for each actor in how many films he played from year X and on, and the total number of awards those movies won.
                         </p>
                         <p id="movies_with_actors_by_name" style="color: black; margin: 0;{{movies_with_actors_by_name[display]}}">
-							bla bla bla bla bla
+							Movies-Actors by Name Query <br><br>
+                            Given a string (X) the query returns movies which have actors who played in and X is their first or last name. For each movie it also returns the number of actors and their names.
+                            You can also choose to use X as a sub-string and then the query will search for actors which have X as a sub-string in their name.
+
                         </p>
 					</div>
 					<p>
