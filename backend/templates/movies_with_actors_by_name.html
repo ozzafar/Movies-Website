@@ -4,7 +4,7 @@
 			<div class="col-md-9 col-sm-12 col-xs-12">
 				{% if is_form_sent %}
 				<div class="topbar-filter">
-					<p class="pad-change" style="padding-right: 370px;">Found <span>1,608 celebrities</span> in total</p>
+					<p style="padding-right: 0px;">Found <span>{{ res|length }} results</span>{{search_query}}</p>
 				</div>
 				<div class="celebrity-items" style="padding-right: 150px">
 					{% for row in res %}
