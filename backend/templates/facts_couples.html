@@ -4,7 +4,7 @@
 			<div class="col-md-9 col-sm-12 col-xs-12">
 				{% if is_form_sent %}
 				<div class="topbar-filter">
-					<p class="pad-change" style="padding-right: 370px;">Found <span>1,608 celebrities</span> in total</p>
+					<p class="pad-change">Found <span>{{ res|length }} couples</span>{{search_query}}</p>
 				</div>
 				<div class="celebrity-items">
 					{% for row in res %}
@@ -54,7 +54,7 @@
 				<div class="sidebar">
 						<div class="searh-form">
 						<h4 class="sb-title">Search</h4>
-						<form class="form-style-1 celebrity-form" action="" method="post">
+						<form class="form-style-1 celebrity-form" action="" method="post" onsubmit="return validate_form();">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Number of common movies:</label>
@@ -63,12 +63,13 @@
 								<div class="col-md-12 form-it">
 									<label>Genres</label>
 									<div class="group-ip">
-										<select name="genres" multiple="" class="ui fluid dropdown">
+										<select name="genres_select" multiple="" class="ui fluid dropdown" id="selected_genres">
 											<option value="">Choose genres</option>
 											{% for genre in genres %}
 											<option value="{{genre}}">{{genre}}</option>
 											{% endfor %}
 										</select>
+										<input type="hidden" name="genres" value="" id="selected_genres_hidden">
 									</div>
 								</div>
 								<div class="col-md-12 ">

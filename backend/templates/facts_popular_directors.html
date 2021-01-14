@@ -1,13 +1,13 @@
 {% extends "facts.html" %}
 {% block content %}
-        <div class="row ipad-width">
-			<div class="col-md-8 col-sm-12 col-xs-12">
+        <div class="row ipad-width2">
+			<div class="col-md-9 col-sm-12 col-xs-12">
                 {% if is_form_sent %}
 
 				<div class="topbar-filter">
-					<p style="padding-right: 300px;">Found <span>1,000 movies</span> in total</p>
+					<p class="pad-change">Found <span>{{ res|length }} results</span>{{search_query}}</p>
 				</div>
-				<div class="flex-wrap-movielist">
+				<div class="celebrity-items">
 					{% for row in res %}
                             {% if row[budget]|int>=1000000 %}
                                 {% set bdgt = ((row[budget]|int / 1000000)|int)|string + "M" %}
@@ -32,6 +32,7 @@
 						<a href="#"><img src="{{ director_picture }}" alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
+							<span>director</span>
 						</div>
 					</div>
 					<div class="ceb-item">
@@ -39,6 +40,7 @@
                                                                            width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h2>
+							<span>movie</span>
 						</div>
 					</div>
 					<div class="ceb-item">
@@ -58,11 +60,11 @@
 				</p>
 				{% endif %}
 			</div>
-			<div class="col-md-4 col-sm-12 col-xs-12">
+			<div class="col-md-3 col-sm-12 col-xs-12">
 				<div class="sidebar">
 					<div class="searh-form">
 						<h4 class="sb-title">Search</h4>
-						<form class="form-style-1" action="" method="post">
+						<form class="form-style-1 celebrity-form" action="" method="post">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Budget</label>

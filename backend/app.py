@@ -102,11 +102,20 @@ def moviegrid():
 @app.route('/facts', methods=['GET', 'POST'])
 def fun_facts():
     fact = request.args.get('fact')
+    init = [" selected", ""]
+    couples = ["", " display:none;"]
+    popular_directors = ["", " display:none;"]
+    countries_movies = ["", " display:none;"]
+    actors_awards = ["", " display:none;"]
+    movies_with_actors_by_name = ["", " display:none;"]
+    selected = 0
+    display = 1
     if type(fact) is str:
         is_form_sent = False
         is_submitted = request.form.get('submit')
         res = ''
         if fact == 'couples':
+            search_query = ''
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
@@ -114,13 +123,24 @@ def fun_facts():
                     genres = str(request.form.get('genres'))
                     genres_lst = genres.split(',')
                     genres_lst = [x.strip() for x in genres_lst]
-
+                    search_query = f" - Number of common movies: {num_of_common_movies}, Genres: {genres}"
                     res = db.director_actor_coupling_query(num_of_common_movies, genres_lst)
-            return render_template('facts_couples.html',  is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res,
+            init = ["", " display:none;"]
+            couples = [" selected", ""]
+            popular_directors = ["", " display:none;"]
+            countries_movies = ["", " display:none;"]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_couples.html', selected=selected, display=display, init=init, couples=couples,
+                                   popular_directors=popular_directors, countries_movies=countries_movies,
+                                   actors_awards=actors_awards, movies_with_actors_by_name=movies_with_actors_by_name,
+                                   is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res,
                                    director_pic=3, director_first_name=1, director_last_name=2,
-                                   actor_pic=7, actor_first_name=5, actor_last_name=6, co_operations=8, user_genres=9)
+                                   actor_pic=7, actor_first_name=5, actor_last_name=6, co_operations=8, user_genres=9,
+                                   search_query=search_query)
         elif fact == 'popular_directors':
             # TODO add <br> every 18 chars in long movie/people names
+            search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
@@ -132,13 +152,24 @@ def fun_facts():
                     if num_of_actors == '':
                         num_of_actors = '0'
                     num_of_actors = int(num_of_actors)
+                    search_query = f" - Budget: {budget}, Number of actors: {num_of_actors}"
                     res = db.directors_movies_budget_query(budget, num_of_actors)
 # director_picture director_first_name director_last_name movie_ID movie_poster title num_of_actors total_budget
-            return render_template('facts_popular_directors.html', is_form_sent=is_form_sent, res=res,
-                                   director_picture_URL=3, director_first_name=1, director_last_name=2,
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = [" selected", ""]
+            countries_movies = ["", " display:none;"]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_popular_directors.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, director_picture_URL=3, director_first_name=1, director_last_name=2,
                                    movie_ID=0, movie_poster=9, title=5, num_of_actors=6, total_budget=8, budget=7,
-                                   movie_index=10, movie_max_index=11)
+                                   movie_index=10, movie_max_index=11, search_query=search_query)
         elif fact == 'countries_movies':
+            search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
@@ -150,9 +181,20 @@ def fun_facts():
                     if num_of_awards == '':
                         num_of_awards = '0'
                     num_of_awards = int(num_of_awards)
+                    search_query = f" - Budget: {budget}, Number of awards: {num_of_awards}"
                     res = db.countries_movies_query(budget, num_of_awards)
-            return render_template('facts_countries_movies.html', is_form_sent=is_form_sent, res=res,
-                                   movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4)
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = ["", " display:none;"]
+            countries_movies = [" selected", ""]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_countries_movies.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4,
+                                   search_query=search_query)
         elif fact == 'actors_awards':
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
@@ -160,8 +202,17 @@ def fun_facts():
                     start_year = request.form.get('start_year')
                     start_year = int(start_year)
                     res = db.actors_movies_awards_query(start_year)
-            return render_template('facts_actors_awards.html', is_form_sent=is_form_sent, res=res,
-                                   first_name=1, last_name=2, movies_played=3,
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = ["", " display:none;"]
+            countries_movies = ["", " display:none;"]
+            actors_awards = [" selected", ""]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_actors_awards.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, first_name=1, last_name=2, movies_played=3,
                                    total_awards=4, picture_URL=5)
         elif fact == 'movies_with_actors_by_name':
             if type(is_submitted) is str:
@@ -170,10 +221,22 @@ def fun_facts():
                     exact_match = request.form.get('exact_match')
                     string_to_search = request.form.get('string_to_search')
                     res = db.movies_actors_with_string_in_name_query(string_to_search, exact_match == "contains")
-            return render_template('movies_with_actors_by_name.html', is_form_sent=is_form_sent, res=res,
-                                   title=1, num_of_actors=2, actors_string=3, poster_URL=4)
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = ["", " display:none;"]
+            countries_movies = ["", " display:none;"]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = [" selected", ""]
+            return render_template('movies_with_actors_by_name.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, title=1, num_of_actors=2, actors_string=3, poster_URL=4)
 
-    return render_template('facts.html')
+    return render_template('facts.html', selected=selected, display=display, init=init,
+                           couples=couples, popular_directors=popular_directors,
+                           countries_movies=countries_movies, actors_awards=actors_awards,
+                           movies_with_actors_by_name=movies_with_actors_by_name)
 
 
 @app.route('/celebritygrid', methods=['GET', 'POST'])

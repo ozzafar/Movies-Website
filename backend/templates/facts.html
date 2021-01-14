@@ -110,32 +110,32 @@
 				<form action="" method="get">
 					<div class="top-search">
 						<select name="fact" id="choose_query" style="width:100%;">
-							<option value="init">Choose fun facts</option>
-							<option value="couples">Couples of director and actor</option>
-							<option value="popular_directors">Popular directors</option>
-							<option value="countries_movies">Countries-Movies</option>
-                            <option value="actors_awards">Actors and number of awards they won</option>
-                            <option value="movies_with_actors_by_name">Movies with actors by name</option>
+							<option value="init"{{init[selected]}}>Choose fun facts</option>
+							<option value="couples"{{couples[selected]}}>Couples of director and actor</option>
+							<option value="popular_directors"{{popular_directors[selected]}}>Popular directors</option>
+							<option value="countries_movies"{{countries_movies[selected]}}>Countries-Movies</option>
+                            <option value="actors_awards"{{actors_awards[selected]}}>Actors and number of awards they won</option>
+                            <option value="movies_with_actors_by_name"{{movies_with_actors_by_name[selected]}}>Movies with actors by name</option>
 						</select>
 					</div>
 					<div id="explain_area" style="background-color: white; border-radius: 20px; padding: 20px; margin-top:30px;">
-						<p id="init" style="color: black; margin: 0;">
+						<p id="init" style="color: black; margin: 0;{{init[display]}}">
 							Waiting for choosing fun fact
 						</p>
-						<p id="couples" style="color: black; margin: 0; display: none;">
+						<p id="couples" style="color: black; margin: 0;{{couples[display]}}">
+							bla
+						</p>
+						<p id="popular_directors" style="color: black; margin: 0;{{popular_directors[display]}}">
 							bla bla
 						</p>
-						<p id="popular_directors" style="color: black; margin: 0; display: none;">
+						<p id="countries_movies" style="color: black; margin: 0;{{countries_movies[display]}}">
 							bla bla bla
 						</p>
-						<p id="countries_movies" style="color: black; margin: 0; display: none;">
+                        <p id="actors_awards" style="color: black; margin: 0;{{actors_awards[display]}}">
 							bla bla bla bla
-						</p>
-                        <p id="actors_awards" style="color: black; margin: 0; display: none;">
-							bla bla
                         </p>
-                        <p id="movies_with_actors_by_name" style="color: black; margin: 0; display: none;">
-							bla bla
+                        <p id="movies_with_actors_by_name" style="color: black; margin: 0;{{movies_with_actors_by_name[display]}}">
+							bla bla bla bla bla
                         </p>
 					</div>
 					<p>
@@ -179,6 +179,19 @@ $( "#choose_query" ).change(function() {
 	$( "#explain_area p:not(#"+show_p_id+")" ).hide( "slow" );
 	$( "#explain_area #" + show_p_id ).show( "slow" );
 });
+</script>
+<script type="text/javascript">
+	function validate_form() {
+		var num_of_selected_genres = $('#selected_genres option:selected').length;
+		if (num_of_selected_genres > 0) {
+			let vals = $('#selected_genres').val();
+			let values = vals.join(',');
+			document.getElementById("selected_genres_hidden").value = values;
+			return true;
+		}
+		alert('You must choose at least one genre');
+		return false;
+	}
 </script>
 </body>
 
