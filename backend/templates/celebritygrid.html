@@ -112,7 +112,9 @@
 					<p class="pad-change" style="padding-right: 370px;">Found <span>{{ res|length }} popular actors</span> in total {{ user_search }}</p>
 				</div>
 				<div class="celebrity-items">
-					{% for row in res %}
+					{% for row in res if not (res[first_name] is none or res[last_name] is none
+					        or res[num_of_movies] is none) %}
+
                         {% if row[picture_URL] is none %}
                             {% set picture = "/static/images/no_photo_availble.png" %}
                         {% else %}
@@ -131,7 +133,7 @@
 			<div class="col-md-3 col-xs-12 col-sm-12">
 				<div class="sidebar">
 						<div class="searh-form">
-						<h4 class="sb-title">Search celebrity</h4>
+						<h4 class="sb-title">Search popular actors</h4>
 						<form class="form-style-1 celebrity-form" action="" method="post">
 							<div class="row">
 								<div class="col-md-12 form-it">

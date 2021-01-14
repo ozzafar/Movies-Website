@@ -517,8 +517,8 @@ class DBbackend:
     def get_movie_rating(self, m_id):
         query = f"""
             SELECT (ms.rotten_tomatoes+ ms.metacritic+ ms.imdb)/3 AS popularity
-            FROM Movies m, Movie_Score ms, Rated r
-            WHERE m.movie_ID = ms.movie_ID AND m.rated_ID = r.rated_ID AND m.movie_ID = {m_id}
+            FROM Movies m, Movie_Score ms
+            WHERE m.movie_ID = ms.movie_ID AND m.movie_ID = {m_id}
         """
         rows = self.execute_sql(query)
         return rows
@@ -540,17 +540,21 @@ class DBbackend:
             WHERE m.movie_ID = mc.movie_ID AND mc.person_ID = p.person_ID AND m.movie_ID = {m_id} AND mc.role = "Director"
         """
         rows = self.execute_sql(query)[0][1:3]
-        director_name = rows[0] + " " + rows[1]
+        if rows[0] is None or rows[1] is None:
+            director_name = None
+        else:
+            director_name = rows[0] + " " + rows[1]
         return director_name
 
     def get_movie_actors(self, m_id):
+        actors=[]
         query = f"""
             SELECT p.*
             FROM Movies m, Movies_Actors ma, Person p
             WHERE m.movie_ID = ma.movie_ID AND ma.person_ID = p.person_ID AND m.movie_ID = {m_id}
         """
         rows = self.execute_sql(query)
-        actors = [act[1] + " " + act[2] for act in rows]
+        actors = [act[1] + " " + act[2] for act in rows if not (act[1] is None or act[2] is None)]
         return actors
 
     #endregion

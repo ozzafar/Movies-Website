@@ -7,8 +7,9 @@
 					<p class="pad-change" style="padding-right: 0px;">Found <span>{{ res|length }} couples</span>{{search_query}}</p>
 				</div>
 				<div class="celebrity-items">
-					{% for row in res %}
-
+					{% for row in res if not (row[director_first_name] is none or row[director_last_name] is none
+                            or row[actor_first_name] is none or row[actor_last_name] is none or row[co_operations] is none
+                            or row[user_genres] is none) %}
                         {% if row[director_pic] is none %}
                             {% set director_picture = "/static/images/no_photo_availble.png" %}
                         {% else %}

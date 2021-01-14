@@ -7,7 +7,9 @@
 					<p style="padding-right: 0px;">Found <span>{{ res|length }} results</span>{{search_query}}</p>
 				</div>
 				<div class="flex-wrap-movielist">
-					{% for row in res %}
+					{% for row in res if not (res[first_name] is none or res[last_name] is none
+					    or res[movies_played] is none or res[total_awards] is none) %}
+
                     <div class="movie-item-style-2 movie-item-style-1">
                         {% if row[picture_URL] is none %}
                             {% set picture = "/static/images/no_photo_availble.png" %}

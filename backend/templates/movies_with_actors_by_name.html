@@ -7,7 +7,9 @@
 					<p style="padding-right: 0px;">Found <span>{{ res|length }} results</span>{{search_query}}</p>
 				</div>
 				<div class="celebrity-items" style="padding-right: 150px">
-					{% for row in res %}
+					{% for row in res if not (res[title] is none or res[num_of_actors] is none
+					        or res[actors_string] is none) %}
+
                         {% set actors_list = row[actors_string].split(',') %}
                         {% if row[poster_URL] is none %}
                             {% set picture = "/static/images/no_photo_availble.png" %}

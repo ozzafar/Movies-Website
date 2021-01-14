@@ -13,6 +13,7 @@ def create_movie_body():
 
     body = ""
     search_query = ""
+    movies=[]
 
     # search fields:
     if 'submit' in request.form.keys():
@@ -43,7 +44,10 @@ def create_movie_body():
         name_index = 1
         rating_index = 18
 
+    movies.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None])  # TODO delete
     for i in range(0,len(movies)):
+        if movies[id_index] is None or movies[name_index] is None or movies[rating_index] is None:
+            continue
         poster_url = movies[i][poster_url_index]
         if movies[i][rating_index] is None:
             continue
@@ -74,23 +78,65 @@ def moviesingle():
     movie = db.get_movie(movie_id)[0]
 
     plot = movie[5]
-    year = movie[3].year
+    if plot is None:
+        plot = "Sorry, plot is not available"
+
+    if movie[3] is None:
+        year = "Sorry, year is not available"
+    else:
+        if movie[3].year is None:
+            year = "Sorry, year is not available"
+        else:
+            year = movie[3].year
+
     name = movie[1]
-    trailer = "https://www.youtube.com/watch?v=" + movie[10]
-    poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
-    date = str(movie[3])
-    runtime = str(movie[4])
-    rating = str(db.get_movie_rating(movie_id)[0][0]/10)[:3]
+    if name is None:
+        name = "Sorry, name is not available"
+
+    trailer = movie[10]
+    if trailer is not None:
+        trailer = "https://www.youtube.com/watch?v=" + movie[10]
+
+    if movie[9] is None:
+        poster = "/static/images/no_photo_availble.png"
+    else:
+        poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
+
+    if movie[3] is None:
+        date = "Sorry, date is not available"
+    else:
+        date = str(movie[3])
+
+    if movie[4] is None:
+        runtime = "Sorry, runtime is not available"
+    else:
+        runtime = str(movie[4])
+
+    rating = db.get_movie_rating(movie_id)
+    if len(rating) == 0:
+        rating = "Sorry, rating is not available"
+    else:
+        rating = str(rating[0][0]/10)[:3] + " /10"
+
     director = db.get_movie_director(movie_id)
+    if director is None:
+        director = "Sorry, director's name is not available"
+
     actors = db.get_movie_actors(movie_id)
+    if len(actors) == 0:
+        actors.append("Sorry, actors names is not available")
 
-    genres_db = (db.get_movie_genres(movie_id)[0])[0].split(',')
-    genres = ""
-    for i in range(len(genres_db) - 1):
-        genres = genres + genres_db[i] + ", "
-    genres += genres_db[-1]
+    genres_db = db.get_movie_genres(movie_id)
+    if len(genres_db)==0:
+        genres = "Sorry, genres are not available"
+    else:
+        genres_db = (genres_db[0])[0].split(',')
+        genres = ""
+        for i in range(len(genres_db) - 1):
+            genres = genres + genres_db[i] + ", "
+        genres += genres_db[-1]
 
-    return render_template('/moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
+    return render_template('moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
                            date=date, poster=poster, trailer=trailer,
                            genres=genres, director=director, actors=actors, rating=rating)
 
@@ -98,7 +144,7 @@ def moviesingle():
 @app.route('/moviegrid', methods=['GET', 'POST'])
 def moviegrid():
     body, num_of_res, search_query = create_movie_body()
-    return render_template('/moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res, search_query=search_query)
+    return render_template('moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res, search_query=search_query)
 
 
 @app.route('/facts', methods=['GET', 'POST'])
@@ -115,7 +161,8 @@ def fun_facts():
     if type(fact) is str:
         is_form_sent = False
         is_submitted = request.form.get('submit')
-        res = ''
+        res = []
+        res.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO - delete
         if fact == 'couples':
             search_query = ''
             if type(is_submitted) is str:
@@ -250,7 +297,8 @@ def fun_facts():
 def celebritygrid():
 
     is_submitted = request.form.get('submit')
-    res = ''
+    res = []
+    res.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO delete
     user_search = ''
     if type(is_submitted) is str:
         if is_submitted == 'submit': # TODO delete this if
@@ -283,6 +331,7 @@ def index():
                 movies_info = AuxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
                 num_of_movies = min(11, len(movies_info))
                 for movie_index in range(num_of_movies):
+
                     bodyMor += movies_info[movie_index].get_html_body()
                 return render_template('index.html', body=bodyMor)
             else:
