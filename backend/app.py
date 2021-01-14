@@ -12,6 +12,7 @@ def create_movie_body():
     is_search = False
 
     body = ""
+    search_query = ""
 
     # search fields:
     if 'submit' in request.form.keys():
@@ -25,6 +26,7 @@ def create_movie_body():
                 from_year = request.form.get('from_year')
                 to_year = request.form.get('to_year')
                 is_search = True
+                search_query = f" - {exact_match} \"{movie_title}\", Genres: {genres},  Minimum rating: {minimum_rating}, From {from_year} to {to_year}"
     if is_search:
         movies = db.movies_with_string_in_name_query(movie_title, int(minimum_rating)*10,
                     genres.split(","), int(from_year), int(to_year), sub_string=(exact_match == "contains"))
@@ -63,7 +65,7 @@ def create_movie_body():
                         <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
                     </div>
                 </div>""")
-    return body, len(movies)
+    return body, len(movies), search_query
 
 
 @app.route('/moviesingle', methods=['GET'])
@@ -95,8 +97,8 @@ def moviesingle():
 
 @app.route('/moviegrid', methods=['GET', 'POST'])
 def moviegrid():
-    body, num_of_res = create_movie_body()
-    return render_template('/moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res)
+    body, num_of_res, search_query = create_movie_body()
+    return render_template('/moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res, search_query=search_query)
 
 
 @app.route('/facts', methods=['GET', 'POST'])
@@ -196,10 +198,12 @@ def fun_facts():
                                    res=res, movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4,
                                    search_query=search_query)
         elif fact == 'actors_awards':
+            search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
                     start_year = request.form.get('start_year')
+                    search_query = f" - From {start_year}"
                     start_year = int(start_year)
                     res = db.actors_movies_awards_query(start_year)
             init = ["", " display:none;"]
@@ -213,14 +217,16 @@ def fun_facts():
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
                                    res=res, first_name=1, last_name=2, movies_played=3,
-                                   total_awards=4, picture_URL=5)
+                                   total_awards=4, picture_URL=5, search_query=search_query)
         elif fact == 'movies_with_actors_by_name':
+            search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
                     exact_match = request.form.get('exact_match')
                     string_to_search = request.form.get('string_to_search')
                     res = db.movies_actors_with_string_in_name_query(string_to_search, exact_match == "contains")
+                    search_query = f" - {exact_match} \"{string_to_search}\""
             init = ["", " display:none;"]
             couples = ["", " display:none;"]
             popular_directors = ["", " display:none;"]
@@ -231,7 +237,8 @@ def fun_facts():
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
-                                   res=res, title=1, num_of_actors=2, actors_string=3, poster_URL=4)
+                                   res=res, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
+                                   search_query=search_query)
 
     return render_template('facts.html', selected=selected, display=display, init=init,
                            couples=couples, popular_directors=popular_directors,
