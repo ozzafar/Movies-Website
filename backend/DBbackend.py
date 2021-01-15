@@ -199,7 +199,7 @@ class DBbackend:
         query = f"""
         SELECT r.movie_ID, r.title, GROUP_CONCAT(r.genre), r.released, r.run_time, r.popularity, r.poster_URL
         FROM Recommendations r
-        WHERE ({user_genres}) AND r.popularity_rank <= 10
+        WHERE ({user_genres_string}) AND r.popularity_rank <= 10
             AND EXTRACT(YEAR FROM r.released) BETWEEN {start_year} AND {end_year}
             AND (EXTRACT(HOUR FROM r.run_time)*60+EXTRACT(MINUTE FROM r.run_time))
             BETWEEN {min_len} AND {max_len}
