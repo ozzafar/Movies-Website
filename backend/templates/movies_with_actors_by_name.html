@@ -10,7 +10,8 @@
 					{% for row in res if not (res[title] is none or res[num_of_actors] is none
 					        or res[actors_string] is none) %}
 
-                        {% set actors_list = row[actors_string].split(',') %}
+						{% set movie_id = row[id] %}
+						{% set actors_list = row[actors_string].split(',') %}
                         {% if row[poster_URL] is none %}
                             {% set picture = "/static/images/no_photo_availble.png" %}
                         {% else %}
@@ -18,7 +19,7 @@
                         {% endif %}
 
 					<div class="ceb-item">
-						<a href="#"><img src={{ picture }} alt="" width="300" height="450"></a>
+						<a href="/moviesingle?movie={{movie_id}}"><img src={{ picture }} alt="" width="300" height="450"></a>
 						<div class="ceb-infor">
 							<h2><a href="#">{{row[title]}}</a></h2>
 						</div>

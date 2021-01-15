@@ -214,8 +214,8 @@ def fun_facts():
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
-                                   res=res, director_picture_URL=3, director_first_name=1, director_last_name=2,
-                                   movie_ID=0, movie_poster=9, title=5, num_of_actors=6, total_budget=8, budget=7,
+                                   res=res, person_ID=0, director_first_name=1, director_last_name=2,
+                                   director_picture_URL=3, movie_ID = 4, title=5, num_of_actors=6, budget=7, total_budget=8, movie_poster=9,
                                    movie_index=10, movie_max_index=11, search_query=search_query)
         elif fact == 'countries_movies':
             search_query = ""
@@ -284,7 +284,7 @@ def fun_facts():
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
-                                   res=res, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
+                                   res=res, id = 0, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
                                    search_query=search_query)
 
     return render_template('facts.html', selected=selected, display=display, init=init,
