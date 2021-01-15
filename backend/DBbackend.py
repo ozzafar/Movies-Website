@@ -194,39 +194,17 @@ class DBbackend:
     # user_genres is an array
     # Opening page
     def recommendations_query(self, user_genres, min_len, max_len, start_year, end_year):
-        user_genres_string = self.parse_genres("g", user_genres)
+        user_genres_string = self.parse_genres("r", user_genres)
 
         query = f"""
-        SELECT rmn.movie_ID, rmn.title, GROUP_CONCAT(rmn.genre), rmn.released, rmn.run_time, rmn.popularity, rmn.poster_URL
-        FROM(
-            SELECT g.genre, m.movie_ID, m.title, m.released, m.run_time,
-              (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 AS popularity,
-              ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank,
-              m.poster_URL
-            FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
-            WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
-            AND ({user_genres_string}) AND m.movie_ID = ms.movie_ID
-            AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
-            AND (EXTRACT(HOUR FROM m.run_time)*60+EXTRACT(MINUTE FROM m.run_time))
-        	BETWEEN {min_len} AND {max_len}
-            ) rmn
-        WHERE rmn.popularity_rank <= 10
-        GROUP BY rmn.movie_ID, rmn.title, rmn.released, rmn.run_time, rmn.popularity
-        ORDER BY rmn.popularity DESC
-        """
-
-        rows = self.execute_sql(query)
-        return rows
-
-    # If user doesn't specifies user_genre - return all categories. Same with years
-    # TODO - delete. not in use
-    def popular_movies_query(self, user_genre, start_year, end_year):
-        query = f"""
-        SELECT m.title, g.genre, m.released, m.run_time, m.plot, (ms.rotten_tomatoes+ ms.metacritic+ ms.imdb)/3 AS popularity, r.rated
-        FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g, Rated r
-        WHERE m.movie_ID = ms.movie_ID AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year} AND m.movie_ID = mg.movie_ID
-            AND mg.genre_ID = g.genre_ID AND g.genre = {user_genre} AND m.rated_ID = r.rated_ID
-        ORDER BY popularity DESC
+        SELECT r.movie_ID, r.title, GROUP_CONCAT(r.genre), r.released, r.run_time, r.popularity, r.poster_URL
+        FROM Recommendations r
+        WHERE ({user_genres}) AND r.popularity_rank <= 10
+            AND EXTRACT(YEAR FROM r.released) BETWEEN {start_year} AND {end_year}
+            AND (EXTRACT(HOUR FROM r.run_time)*60+EXTRACT(MINUTE FROM r.run_time))
+            BETWEEN {min_len} AND {max_len}
+        GROUP BY r.movie_ID, r.title, r.released, r.run_time, r.popularity
+        ORDER BY r.popularity DESC
         """
         rows = self.execute_sql(query)
         return rows
@@ -235,32 +213,12 @@ class DBbackend:
     def popular_actors_query(self, movie_score, start_year, end_year):
 
         query = f"""
-        SELECT p.person_ID, p.first_name, p.last_name, p.gender, COUNT(*) AS amount_of_movies, p.picture_URL
-        FROM Person p, Movies_Actors ma, Movie_Score ms, Movies m
-        WHERE p.person_ID = ma.person_ID AND ma.movie_ID = ms.movie_ID AND ma.movie_ID=m.movie_ID
-        	  AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
-            AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
-
-        GROUP BY p.person_ID, p.first_name, p.last_name, p.picture_URL
-        ORDER BY amount_of_movies DESC, p.first_name, p.last_name
-        """
-
-        rows = self.execute_sql(query)
-        return rows
-
-    # Celebrities grid
-    def popular_crew_query(self, movie_score, start_year, end_year):
-
-        query = f"""
-        SELECT p.person_ID, p.first_name, p.last_name, p.gender, COUNT(*) AS amount_of_movies,
-              p.picture_URL, GROUP_CONCAT(DISTINCT mc.role SEPARATOR ", ")
-        FROM Person p, Movies_Crew mc, Movie_Score ms, Movies m
-        WHERE p.person_ID = mc.person_ID AND mc.movie_ID = ms.movie_ID AND mc.movie_ID=m.movie_ID
-        	  AND EXTRACT(YEAR FROM m.released) BETWEEN {start_year} AND {end_year}
-            AND (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 >= {movie_score}
-
-        GROUP BY p.person_ID, p.first_name, p.last_name, p.picture_URL
-        ORDER BY amount_of_movies DESC
+        SELECT person_ID, first_name, last_name, gender, COUNT(*) AS amount_of_movies, picture_URL
+        FROM Popular_Actors pa
+        WHERE EXTRACT(YEAR FROM pa.movie_released) BETWEEN {start_year} AND {end_year}
+            AND movie_popularity >= {movie_score}
+        GROUP BY person_ID, first_name, last_name, picture_URL
+        ORDER BY amount_of_movies DESC, first_name, last_name
         """
 
         rows = self.execute_sql(query)
@@ -293,11 +251,12 @@ class DBbackend:
         FROM (
             SELECT person_ID, first_name, last_name, title, num_of_actors, budget, picture_URL, poster_URL,
                 movie_ID, 
-                SUM(budget) OVER (PARTITION BY person_ID, first_name, last_name, picture_URL) total_budget,
-                ROW_NUMBER() OVER (PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC) movie_index,
-                COUNT(*) OVER (PARTITION BY person_ID, first_name, last_name, picture_URL) max_index
+                SUM(budget) OVER w total_budget,
+                ROW_NUMBER() OVER w movie_index,
+                COUNT(*) OVER w max_index
             FROM Movie_numOfActors_Director mad
             WHERE mad.num_of_actors >={actors_number} AND mad.budget>=10000 # TODO delete last condition
+            WINDOW w AS (PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC)
           ) t
         WHERE t.total_budget>={budget}
         ORDER BY director_first_name, director_last_name, budget DESC
@@ -305,25 +264,6 @@ class DBbackend:
 
         rows = self.execute_sql(query)
         return rows
-
-    # TODO - delete. no need in this query
-    # return Director-total_budget (total_budget is the total_budget of movies made by the director, each having more that "num_of_actors" played in)
-    def directors_budget_query(self, budget, num_of_directors=10, num_of_actors=1):
-        pass
-
-        # WORKING
-
-        # query = f"\
-        # SELECT person_ID, first_name, last_name, SUM(budget) AS total_budget
-        # FROM Movie_numOfActors_Director mad
-        # WHERE mad.num_of_actors >={num_of_actors}
-        # GROUP BY person_ID, first_name, last_name
-        # HAVING total_budget>={budget}
-        # ORDER BY total_budget DESC
-        # LIMIT {num_of_directors}"
-
-        # rows = self.execute_sql(query)
-        # return rows
 
     # user can ignore awards
     # Fun Facts
@@ -364,8 +304,6 @@ class DBbackend:
 
     # ------ Full-Text Queries --------
 
-    # TODO - ask dvir if he wants to make it available to choose soome categories or just (one or all)
-    # TODO either way need to handle the oprion of "ALL"
     # Movies Grid
     def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genres, start_year,
                                          end_year, sub_string=False):
@@ -397,23 +335,6 @@ class DBbackend:
         """
         rows = self.execute_sql(query)
         return rows
-
-    # TODO - delete. not using this query
-    def movies_with_string_in_plot_query(self, string_to_search, sub_string=False):
-        pass
-
-        # WORKING
-
-        # if sub_string:
-        #     string_to_search = string_to_search + "*"
-        #
-        # query = f"\
-        # SELECT m.title, r.rated, m.released, m.run_time, m.plot, m.awards, m.budget, m.revenue\
-        # FROM Movies m, Rated r\
-        # WHERE m.rated_ID = r.rated_ID AND Match(m.plot) AGAINST(\"{string_to_search}\" IN BOOLEAN MODE)"
-        #
-        # rows = self.execute_sql(query)
-        # return rows
 
     # Fun Facts/Movies Grid
     def movies_actors_with_string_in_name_query(self, string_to_search, sub_string=False):
@@ -497,6 +418,33 @@ class DBbackend:
             GROUP BY g.genre_ID, g.genre, p1.person_ID, p1.first_name, p1.last_name, p2.person_ID, p2.first_name, p2.last_name
             """
 
+        self.execute_sql(query)
+
+    #view for recommendations query
+    def recommendations_view(self):
+
+        query= """
+        CREATE OR REPLACE VIEW Recommendations AS
+            SELECT g.genre, m.movie_ID, m.title, m.released, m.run_time,
+              (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 AS popularity,
+              ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank,
+              m.poster_URL
+            FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
+            WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
+            AND m.movie_ID = ms.movie_ID
+        """
+        self.execute_sql(query)
+
+    #VIEW for popular_actors query
+    def popular_actors_view(self):
+
+        query="""
+        CREATE OR REPLACE VIEW Popular_Actors AS
+            SELECT p.person_ID, p.first_name, p.last_name, p.gender, p.picture_URL, m.movie_ID, m.released AS movie_released, 
+                (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS movie_popularity
+            FROM Person p, Movies_Actors ma, Movie_Score ms, Movies m
+            WHERE p.person_ID = ma.person_ID AND ma.movie_ID = ms.movie_ID AND ma.movie_ID=m.movie_ID
+        """
         self.execute_sql(query)
 
     #endregion
