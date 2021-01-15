@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7 no-js" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8 no-js" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en" class="no-js">
+
+
+<head>
+	<!-- Basic need -->
+	<title>Find Me A Movie - Fun Facts</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<meta name="author" content="">
+
+    <!--Google Font-->
+    <link rel="stylesheet" href='http://fonts.googleapis.com/css?family=Dosis:400,700,500|Nunito:300,400,600' />
+	<!-- Mobile specific meta -->
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<meta name="format-detection" content="telephone-no">
+
+	<!-- CSS files -->
+	<link rel="stylesheet" href="static/css/plugins.css">
+	<link rel="stylesheet" href="static/css/style.css">
+	<style type="text/css">
+		.button-search-fact {
+			background-color: #dd003f;
+			color: #ffffff;
+			border-color: #0a1a17;
+			margin-top: 20px;
+			padding: 11px 25px;
+			-webkit-border-radius: 20px;
+			-moz-border-radius: 20px;
+			border-radius: 20px;
+			font-family: 'Dosis', sans-serif;
+			font-size: 14px;
+			font-weight: bold;
+			text-transform: uppercase;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+<!--preloading-->
+<div id="preloader">
+    <img class="logo" src="static/images/logo1.png" alt="" width="119" height="58">
+    <div id="status">
+        <span></span>
+        <span></span>
+    </div>
+</div>
+<!--end of preloading-->
+
+<!-- BEGIN | Header -->
+<header class="ht-header">
+	<div class="container">
+		<nav class="navbar navbar-default navbar-custom">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header logo">
+				    <a href="/index"><img class="logo" src="static/images/logo1.png" alt="" width="119" height="58"></a>
+			    </div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse flex-parent" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav flex-child-menu menu-left">
+						<li class="hidden">
+							<a href="#page-top"></a>
+						</li>
+						<li class="dropdown first">
+							<a href="/index" class="btn btn-default lv1">
+							Home <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+						<li class="dropdown first">
+							<a href="/moviegrid" class="btn btn-default lv1">
+								movies <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+						<li class="dropdown first">
+							<a href="/celebritygrid" class="btn btn-default lv1">
+								popular actors <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+						<li class="dropdown first">
+							<a href="/facts" class="btn btn-default lv1">
+								Fun Facts <i class="fa" aria-hidden="true"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+			<!-- /.navbar-collapse -->
+	    </nav>
+
+	</div>
+</header>
+<!-- END | Header -->
+
+<div class="hero common-hero">
+	<div class="container">
+		<div class="row">
+			<div id="facts_header" class="col-md-12">
+				<div class="hero-ct">
+					<h1>Fun Facts</h1>
+				</div>
+
+				<!-- top search form -->
+				<form action="" method="get">
+					<div class="top-search">
+						<select name="fact" id="choose_query" style="width:100%;">
+							<option value="init"{{init[selected]}}>Choose fun facts</option>
+							<option value="couples"{{couples[selected]}}>Couples of director and actor</option>
+							<option value="popular_directors"{{popular_directors[selected]}}>Popular directors</option>
+							<option value="countries_movies"{{countries_movies[selected]}}>Countries-Movies</option>
+                            <option value="actors_awards"{{actors_awards[selected]}}>Actors-Awards</option>
+                            <option value="movies_with_actors_by_name"{{movies_with_actors_by_name[selected]}}>Movies-Actors by Name</option>
+						</select>
+					</div>
+					<div id="explain_area" style="background-color: white; border-radius: 20px; padding: 20px; margin-top:30px;">
+						<p id="init" style="color: black; margin: 0;{{init[display]}}">
+							Waiting for choosing fun fact
+						</p>
+						<p id="couples" style="color: black; margin: 0;{{couples[display]}}">
+                            Couples of Director and Actor Query<br><br>
+							Given number of movies (X) and list of genres (Y) the query returns couples of director-actor who did together more than X movies while each movie counted is under a genre that appears in Y. For each couple the query also returns the number of movies they did together and the genres of these movies (each genre coming from one or more movies)
+						</p>
+						<p id="popular_directors" style="color: black; margin: 0;{{popular_directors[display]}}">
+                            Popular Directors Query<br><br>
+                            Given budget (X) and number of actors (Y) the query returns names of directors which the total budget of movies they did with Y actors or more is at least X, and the total budget. For each director in the list we also present the movies he directed with more than X actors and their budget.
+						</p>
+						<p id="countries_movies" style="color: black; margin: 0;{{countries_movies[display]}}">
+							Countries-Movies Query <br><br>
+                            Given budget (X) and number of movie awards (Y) the query returns country-movie couples which the movie was filmed in this country, it’s budget was more than X and won at least Y awards.
+						</p>
+                        <p id="actors_awards" style="color: black; margin: 0;{{actors_awards[display]}}">
+							Actors-Awards Query<br><br>
+                            Given a year (X) the query returns for each actor in how many films he played from year X and on, and the total number of awards those movies won.
+                        </p>
+                        <p id="movies_with_actors_by_name" style="color: black; margin: 0;{{movies_with_actors_by_name[display]}}">
+							Movies-Actors by Name Query <br><br>
+                            Given a string (X) the query returns movies which have actors who played in and X is their first or last name. For each movie it also returns the number of actors and their names.
+                            You can also choose to use X as a sub-string and then the query will search for actors which have X as a sub-string in their name.
+
+                        </p>
+					</div>
+					<p>
+						<input type="submit" value="Select" class="button-search-fact">
+					</p>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="page-single">
+	<div class="container">
+		{% block content %}{% endblock %}
+	</div>
+</div>
+<!-- footer section-->
+<footer class="ht-footer">
+	<div class="container">
+		<div class="flex-parent-ft">
+			<div class="flex-child-ft item1">
+				 <a href="index"><img class="logo" src="static/images/logo1.png" alt=""></a>
+				 <p>Built by<br>Mor Polani<br>Daniel Kotler<br>Oz Zafar<br>Dvir Salomon</p>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="backtotop">
+			<p><a href="#" id="back-to-top">Back to top  <i class="ion-ios-arrow-thin-up"></i></a></p>
+		</div>
+	</div>
+</footer>
+<!-- end of footer section-->
+
+<script src="static/js/jquery.js"></script>
+<script src="static/js/plugins.js"></script>
+<script src="static/js/plugins2.js"></script>
+<script src="static/js/custom.js"></script>
+<script>
+$( "#choose_query" ).change(function() {
+	show_p_id = $( this ).val();
+	$( "#explain_area p:not(#"+show_p_id+")" ).hide( "slow" );
+	$( "#explain_area #" + show_p_id ).show( "slow" );
+});
+</script>
+<script type="text/javascript">
+	function validate_form() {
+		var num_of_selected_genres = $('#selected_genres option:selected').length;
+		if (num_of_selected_genres > 0) {
+			let vals = $('#selected_genres').val();
+			let values = vals.join(',');
+			document.getElementById("selected_genres_hidden").value = values;
+			return true;
+		}
+		alert('You must choose at least one genre');
+		return false;
+	}
+</script>
+</body>
+
+
+</html>

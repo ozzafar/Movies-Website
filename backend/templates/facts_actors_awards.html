@@ -1,0 +1,52 @@
+{% extends "facts.html" %}
+{% block content %}
+		<div class="row ipad-width">
+			<div class="col-md-8 col-sm-12 col-xs-12">
+                {% if is_form_sent %}
+				<div class="topbar-filter">
+					<p style="padding-right: 0px;">Found <span>{{ res|length }} results</span>{{search_query}}</p>
+				</div>
+				<div class="flex-wrap-movielist">
+					{% for row in res if not (res[first_name] is none or res[last_name] is none
+					    or res[movies_played] is none or res[total_awards] is none) %}
+
+                    <div class="movie-item-style-2 movie-item-style-1">
+                        {% if row[picture_URL] is none %}
+                            {% set picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set picture = "https://image.tmdb.org/t/p/w300" + row[picture_URL] %}
+                        {% endif %}
+                        <img src={{picture}} alt="" width="170" height="225">
+                        <div class="mv-item-infor">
+                            <h6>{{row[first_name]}} {{row[last_name]}}</h6>
+                            <p class="rate">Number of awards: {{row[total_awards]}}<br>Number of movies: {{ row[movies_played] }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+				</div>
+                {% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12">
+				<div class="sidebar">
+					<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1" action="" method="post">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>From Year</label>
+									<input type="text" name="start_year" placeholder="Enter a year">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}

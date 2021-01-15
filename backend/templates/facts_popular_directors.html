@@ -1,0 +1,90 @@
+{% extends "facts.html" %}
+{% block content %}
+        <div class="row ipad-width2">
+			<div class="col-md-9 col-sm-12 col-xs-12">
+                {% if is_form_sent %}
+
+				<div class="topbar-filter">
+					<p class="pad-change">Found <span>{{ res|length }} results</span>{{search_query}}</p>
+				</div>
+				<div class="celebrity-items">
+					{% for row in res if not (row[director_first_name] is none
+					    or row[director_last_name] is none or row[person_ID] is none or row[title] is none
+					    or row[num_of_actors] is none or row[budget] is none or row[total_budget] is none
+					    or row[movie_index] is none or row[movie_max_index] is none) %}
+
+                            {% if row[budget]|int>=1000000 %}
+                                {% set bdgt = ((row[budget]|int / 1000000)|int)|string + "M" %}
+                            {% endif %}
+                            {% if row[total_budget]|int>=1000000 %}
+                                {% set ttl_bdgt = ((row[total_budget]|int / 1000000)|int)|string + "M" %}
+                            {% endif %}
+
+                            {% if row[director_picture_URL] is none %}
+                                {% set director_picture = "/static/images/no_photo_availble.png" %}
+                            {% else %}
+                                {% set director_picture = "https://image.tmdb.org/t/p/w300" + row[director_picture_URL]|string %}
+                            {% endif %}
+
+                            {% if row[movie_poster] is none %}
+                                {% set movie_picture = "/static/images/no_photo_availble.png" %}
+                            {% else %}
+                                {% set movie_picture = "https://image.tmdb.org/t/p/w1280" + row[movie_poster]|string %}
+                            {% endif %}
+
+					<div class="ceb-item">
+						<a href="#"><img src="{{ director_picture }}" alt="" width="300" height="450"></a>
+						<div class="ceb-infor">
+							<h2><a href="#">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
+							<span>director</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<a href="/moviesingle?movie={{row[movie_ID]}}"><img src="{{movie_picture}}" alt=""
+                                                                           width="300" height="450"></a>
+						<div class="ceb-infor">
+							<h2><a href="/moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h2>
+							<span>movie</span>
+						</div>
+					</div>
+					<div class="ceb-item">
+						<div class="ceb-infor">
+							<p><span>Number of actors: {{row[num_of_actors]}}</span></p>
+							<p><span>Budget: {{bdgt}}</span></p>
+							<p><span>Total budget: {{ttl_bdgt}}</span></p>
+                            <p><span>Movie no.: {{row[movie_index]}} out of {{row[movie_max_index]}}</span></p>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+
+                {% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-3 col-sm-12 col-xs-12">
+				<div class="sidebar">
+					<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1 celebrity-form" action="" method="post">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>Budget</label>
+									<input type="text" name="budget" placeholder="Enter budget">
+								</div>
+								<div class="col-md-12 form-it">
+									<label>Number of actors</label>
+									<input type="text" name="num_of_actors" placeholder="Enter a number">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}

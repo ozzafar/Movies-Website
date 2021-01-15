@@ -1,6 +1,6 @@
 from DBbackend import DBbackend
 import html
-import auxiliaryFuncs
+import AuxiliaryFuncs
 from config import *
 from flask import Flask, render_template, request
 
@@ -9,28 +9,67 @@ app = Flask(__name__)
 db = DBbackend()
 
 def create_movie_body():
-    movies = db.get_movies_ratings()
+    is_search = False
+
     body = ""
-    page = int(request.args.get('page'))
-    for i in range(20 * (page - 1), 20 * page):
-        poster_url = movies[i][9]
+    search_query = ""
+    movies=[]
+
+    # search fields:
+    if 'submit' in request.form.keys():
+        is_submitted = request.form.get('submit')
+        if type(is_submitted) is str:
+            if is_submitted == 'submit':
+                exact_match = request.form.get('exact_match')
+                movie_title = request.form.get('movie_title')
+                genres = request.form.get('genres')
+                minimum_rating = request.form.get('minimum_rating')
+                from_year = request.form.get('from_year')
+                to_year = request.form.get('to_year')
+                is_search = True
+                search_query = f" - {exact_match} \"{movie_title}\", Genres: {genres},  Minimum rating: {minimum_rating}, From {from_year} to {to_year}"
+    if is_search:
+        movies = db.movies_with_string_in_name_query(movie_title, int(minimum_rating)*10,
+                    genres.split(","), int(from_year), int(to_year), sub_string=(exact_match == "contains"))
+        #print('num of movies1: ' + str(len(movies)))
+        poster_url_index = 4
+        id_index = 0
+        name_index = 1
+        rating_index = 3
+    else:
+        movies = db.get_movies_ratings()
+        #print('num of movies2: '+str(len(movies)))
+        poster_url_index = 9
+        id_index = 0
+        name_index = 1
+        rating_index = 18
+
+    movies.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None])  # TODO delete
+    for i in range(0,len(movies)):
+        if movies[id_index] is None or movies[name_index] is None or movies[rating_index] is None:
+            continue
+        poster_url = movies[i][poster_url_index]
+        if movies[i][rating_index] is None:
+            continue
         if poster_url != None:
-            poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][9]
-            id = str(movies[i][0])
-            name = movies[i][1]
-            rating = str(movies[i][18] / 10)[:3]
-            body += (f"""
-            		<div class="movie-item-style-2 movie-item-style-1">
-						<img src={poster_url_full} alt="">
-						<div class="hvr-inner">
-							<a  href=moviesingle?movie={id}> Read more <i class="ion-android-arrow-dropright"></i> </a>
-						</div>
-						<div class="mv-item-infor">
-							<h6><a href=moviesingle?movie={id}> {name} </a></h6>
-							<p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
-						</div>
-					</div>""")
-    return body
+            poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][poster_url_index]
+        else:
+            poster_url_full = "/static/images/no_photo_availble.png"
+        id = str(movies[i][id_index])
+        name = movies[i][name_index]
+        rating = str(movies[i][rating_index] / 10)[:3]
+        body += (f"""
+                <div class="movie-item-style-2 movie-item-style-1">
+                    <img src={poster_url_full} alt="">
+                    <div class="hvr-inner">
+                        <a  href=moviesingle?movie={id}> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                    </div>
+                    <div class="mv-item-infor">
+                        <h6><a href=moviesingle?movie={id}> {name} </a></h6>
+                        <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
+                    </div>
+                </div>""")
+    return body, len(movies), search_query
 
 
 @app.route('/moviesingle', methods=['GET'])
@@ -39,55 +78,240 @@ def moviesingle():
     movie = db.get_movie(movie_id)[0]
 
     plot = movie[5]
-    year = movie[3].year
+    if plot is None:
+        plot = "Sorry, plot is not available"
+
+    if movie[3] is None:
+        year = "Sorry, year is not available"
+    else:
+        if movie[3].year is None:
+            year = "Sorry, year is not available"
+        else:
+            year = movie[3].year
+
     name = movie[1]
-    trailer = "https://www.youtube.com/" + movie[10]
-    poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
-    date = str(movie[3])
-    runtime = str(movie[4])
-    rating = str(db.get_movie_rating(movie_id)[0][0]/10)[:3]
+    if name is None:
+        name = "Sorry, name is not available"
+
+    trailer = movie[10]
+    if trailer is not None:
+        trailer = "https://www.youtube.com/watch?v=" + movie[10]
+
+    if movie[9] is None:
+        poster = "/static/images/no_photo_availble.png"
+    else:
+        poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
+
+    if movie[3] is None:
+        date = "Sorry, date is not available"
+    else:
+        date = str(movie[3])
+
+    if movie[4] is None:
+        runtime = "Sorry, runtime is not available"
+    else:
+        runtime = str(movie[4])
+
+    rating = db.get_movie_rating(movie_id)
+    if len(rating) == 0:
+        rating = "Sorry, rating is not available"
+    else:
+        rating = str(rating[0][0]/10)[:3] + " /10"
+
     director = db.get_movie_director(movie_id)
+    if director is None:
+        director = "Sorry, director's name is not available"
+
     actors = db.get_movie_actors(movie_id)
+    if len(actors) == 0:
+        actors.append("Sorry, actors names is not available")
 
-    genres_db = (db.get_movie_genres(movie_id)[0])[0].split(',')
-    genres = ""
-    for i in range(len(genres_db) - 1):
-        genres = genres + genres_db[i] + ", "
-    genres += genres_db[-1]
+    genres_db = db.get_movie_genres(movie_id)
+    if len(genres_db)==0:
+        genres = "Sorry, genres are not available"
+    else:
+        genres_db = (genres_db[0])[0].split(',')
+        genres = ""
+        for i in range(len(genres_db) - 1):
+            genres = genres + genres_db[i] + ", "
+        genres += genres_db[-1]
 
-    return render_template('/moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
+    return render_template('moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
                            date=date, poster=poster, trailer=trailer,
                            genres=genres, director=director, actors=actors, rating=rating)
 
 
-@app.route('/moviegrid', methods=['GET'])
+@app.route('/moviegrid', methods=['GET', 'POST'])
 def moviegrid():
-    body = create_movie_body()
-    return render_template('/moviegrid.html', body=body)
+    body, num_of_res, search_query = create_movie_body()
+    return render_template('moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res, search_query=search_query)
 
 
-@app.route('/celebritygrid', methods=['GET'])
+@app.route('/facts', methods=['GET', 'POST'])
+def fun_facts():
+    fact = request.args.get('fact')
+    init = [" selected", ""]
+    couples = ["", " display:none;"]
+    popular_directors = ["", " display:none;"]
+    countries_movies = ["", " display:none;"]
+    actors_awards = ["", " display:none;"]
+    movies_with_actors_by_name = ["", " display:none;"]
+    selected = 0
+    display = 1
+    if type(fact) is str:
+        is_form_sent = False
+        is_submitted = request.form.get('submit')
+        res = []
+        res.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO - delete
+        if fact == 'couples':
+            search_query = ''
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    num_of_common_movies = int(request.form.get('number_of_common_movies'))
+                    genres = str(request.form.get('genres'))
+                    genres_lst = genres.split(',')
+                    genres_lst = [x.strip() for x in genres_lst]
+                    search_query = f" - Number of common movies: {num_of_common_movies}, Genres: {genres}"
+                    res = db.director_actor_coupling_query(num_of_common_movies, genres_lst)
+            init = ["", " display:none;"]
+            couples = [" selected", ""]
+            popular_directors = ["", " display:none;"]
+            countries_movies = ["", " display:none;"]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_couples.html', selected=selected, display=display, init=init, couples=couples,
+                                   popular_directors=popular_directors, countries_movies=countries_movies,
+                                   actors_awards=actors_awards, movies_with_actors_by_name=movies_with_actors_by_name,
+                                   is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res,
+                                   director_pic=3, director_first_name=1, director_last_name=2,
+                                   actor_pic=7, actor_first_name=5, actor_last_name=6, co_operations=8, user_genres=9,
+                                   search_query=search_query)
+        elif fact == 'popular_directors':
+            # TODO add <br> every 18 chars in long movie/people names
+            search_query = ""
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    budget = request.form.get('budget')
+                    if budget == '':
+                        budget = '0'
+                    budget = int(budget)
+                    num_of_actors = request.form.get('num_of_actors')
+                    if num_of_actors == '':
+                        num_of_actors = '0'
+                    num_of_actors = int(num_of_actors)
+                    search_query = f" - Budget: {budget}, Number of actors: {num_of_actors}"
+                    res = db.directors_movies_budget_query(budget, num_of_actors)
+# director_picture director_first_name director_last_name movie_ID movie_poster title num_of_actors total_budget
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = [" selected", ""]
+            countries_movies = ["", " display:none;"]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_popular_directors.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, person_ID=0, director_first_name=1, director_last_name=2,
+                                   director_picture_URL=3, movie_ID = 4, title=5, num_of_actors=6, budget=7, total_budget=8, movie_poster=9,
+                                   movie_index=10, movie_max_index=11, search_query=search_query)
+        elif fact == 'countries_movies':
+            search_query = ""
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    budget = request.form.get('budget')
+                    if budget == '':
+                        budget = '0'
+                    budget = int(budget)
+                    num_of_awards = request.form.get('num_of_awards')
+                    if num_of_awards == '':
+                        num_of_awards = '0'
+                    num_of_awards = int(num_of_awards)
+                    search_query = f" - Budget: {budget}, Number of awards: {num_of_awards}"
+                    res = db.countries_movies_query(budget, num_of_awards)
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = ["", " display:none;"]
+            countries_movies = [" selected", ""]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_countries_movies.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4,
+                                   search_query=search_query)
+        elif fact == 'actors_awards':
+            search_query = ""
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    start_year = request.form.get('start_year')
+                    search_query = f" - From {start_year}"
+                    start_year = int(start_year)
+                    res = db.actors_movies_awards_query(start_year)
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = ["", " display:none;"]
+            countries_movies = ["", " display:none;"]
+            actors_awards = [" selected", ""]
+            movies_with_actors_by_name = ["", " display:none;"]
+            return render_template('facts_actors_awards.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, first_name=1, last_name=2, movies_played=3,
+                                   total_awards=4, picture_URL=5, search_query=search_query)
+        elif fact == 'movies_with_actors_by_name':
+            search_query = ""
+            if type(is_submitted) is str:
+                if is_submitted == 'submit':
+                    is_form_sent = True
+                    exact_match = request.form.get('exact_match')
+                    string_to_search = request.form.get('string_to_search')
+                    res = db.movies_actors_with_string_in_name_query(string_to_search, exact_match == "contains")
+                    search_query = f" - {exact_match} \"{string_to_search}\""
+            init = ["", " display:none;"]
+            couples = ["", " display:none;"]
+            popular_directors = ["", " display:none;"]
+            countries_movies = ["", " display:none;"]
+            actors_awards = ["", " display:none;"]
+            movies_with_actors_by_name = [" selected", ""]
+            return render_template('movies_with_actors_by_name.html', selected=selected, display=display, init=init,
+                                   couples=couples, popular_directors=popular_directors,
+                                   countries_movies=countries_movies, actors_awards=actors_awards,
+                                   movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
+                                   res=res, id = 0, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
+                                   search_query=search_query)
+
+    return render_template('facts.html', selected=selected, display=display, init=init,
+                           couples=couples, popular_directors=popular_directors,
+                           countries_movies=countries_movies, actors_awards=actors_awards,
+                           movies_with_actors_by_name=movies_with_actors_by_name)
+
+
+@app.route('/celebritygrid', methods=['GET', 'POST'])
 def celebritygrid():
-    body = ""
 
-    if 1==0:
-        movie_score = request.args.get('movie_score')
-        start_year = request.args.get('start_year')
-        end_year = request.args.get('end_year')
-        celebrity_info = auxiliaryFuncs.query_to_actors_info(db, movie_score, start_year, end_year)
+    is_submitted = request.form.get('submit')
+    res = []
+    res.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO delete
+    user_search = ''
+    if type(is_submitted) is str:
+        if is_submitted == 'submit': # TODO delete this if
+            minimum_rating = request.form.get('minimum_rating')
+            start_year = request.form.get('from_year')
+            end_year = request.form.get('to_year')
+            user_search = f", Minimum rating {minimum_rating} from {start_year} to {end_year}"
+            res = db.popular_actors_query(int(minimum_rating)*10, int(start_year), int(end_year))
     else:
-        celebrity_info = auxiliaryFuncs.query_to_actors_info(db, 0, 1500, 3000)
+        res = db.popular_actors_query(0, 1500, 3000)
 
-    page = int(request.args.get('page'))
-
-    if (page-1)*9 > len(celebrity_info):
-        body = "<p> No Actors For This Page <p>" # TODO - do it right
-    else:
-        for celebrity in range(9 * (page - 1), min(len(celebrity_info), 9 * page)):
-            body += celebrity_info[celebrity].get_html_body()
-
-    return render_template('/celebritygrid.html', body=body, page=page)
-
+    return render_template('celebritygrid.html', res=res, user_search=user_search,
+                           first_name=1, last_name=2, num_of_movies=4, picture_URL=5)
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
@@ -104,9 +328,10 @@ def index():
         if is_valid_movie_length(movie_length):  # genres != None and (is list and len(genres) == 2
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
-                movies_info = auxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
-                num_of_movies = min(11, len(movies_info))
+                movies_info = AuxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
+                num_of_movies = min(20, len(movies_info))
                 for movie_index in range(num_of_movies):
+
                     bodyMor += movies_info[movie_index].get_html_body()
                 return render_template('index.html', body=bodyMor)
             else:

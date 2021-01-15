@@ -1,0 +1,64 @@
+{% extends "facts.html" %}
+{% block content %}
+		<div class="row ipad-width">
+			<div class="col-md-8 col-sm-12 col-xs-12">
+                {% if is_form_sent %}
+				<div class="topbar-filter">
+					<p class="pad-change">Found <span>{{ res|length }} results</span>{{search_query}}</p>
+				</div>
+				<div class="flex-wrap-movielist">
+					{% for row in res if not (res[country] is none or res[movie_ID] is none
+					    or res[title] is none or res[budget] is none or res[awards] is none) %}
+
+                        {% if row[movie_poster] is none %}
+                            {% set picture = "/static/images/no_photo_availble.png" %}
+                        {% else %}
+                            {% set picture = "https://image.tmdb.org/t/p/w1280" + row[movie_poster]|string %}
+                        {% endif %}
+
+                        {% if row[budget]|int>=1000000 %}
+                            {% set bdgt = ((row[budget]|int / 1000000)|int)|string + "M" %}
+                        {% endif %}
+
+                    <div class="movie-item-style-2 movie-item-style-1">
+                        <img src="{{ picture }}" alt="">
+                        <div class="hvr-inner">
+                            <a  href="/moviesingle?movie={{row[movie_ID]}}"> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                        </div>
+                        <div class="mv-item-infor">
+                            <h6><a href="/moviesingle?movie={{row[movie_ID]}}">{{row[title]}}</a></h6>
+                            <p class="rate">{{row[country]}}<br>{{bdgt}} $<br>Number of awards: {{row[awards]}}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+				</div>
+                {% else %}
+				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
+					Please fill the form on the right
+				</p>
+				{% endif %}
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12">
+				<div class="sidebar">
+					<div class="searh-form">
+						<h4 class="sb-title">Search</h4>
+						<form class="form-style-1" action="" method="post">
+							<div class="row">
+								<div class="col-md-12 form-it">
+									<label>Budget</label>
+									<input type="text" name="budget" placeholder="Enter budget">
+								</div>
+								<div class="col-md-12 form-it">
+									<label>Number of awards</label>
+									<input type="text" name="num_of_awards" placeholder="Enter a number">
+								</div>
+								<div class="col-md-12 ">
+									<input class="submit" type="submit" name="submit" value="submit">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+{% endblock %}
