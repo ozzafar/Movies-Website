@@ -6,9 +6,7 @@ MIN_YEAR = 1900
 MAX_YEAR = 2100
 ALL = "*"
 
-
 class DBbackend:
-
     # constructor
     def __init__(self):
         try:
@@ -44,7 +42,6 @@ class DBbackend:
             self.cnx.commit()
 
     # region SELECT
-
     def get_movie(self, m_id):
         cursor = self.cnx.cursor()  # get the cursor
         sql = "SELECT * FROM Movies WHERE movie_ID=%s"
