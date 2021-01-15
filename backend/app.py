@@ -329,7 +329,7 @@ def index():
             release = request.args.get('release')
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
                 movies_info = AuxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
-                num_of_movies = min(11, len(movies_info))
+                num_of_movies = min(20, len(movies_info))
                 for movie_index in range(num_of_movies):
 
                     bodyMor += movies_info[movie_index].get_html_body()
