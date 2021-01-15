@@ -12,6 +12,8 @@ def create_movie_body():
     is_search = False
 
     body = ""
+    search_query = ""
+    movies=[]
 
     # search fields:
     if 'submit' in request.form.keys():
@@ -25,6 +27,7 @@ def create_movie_body():
                 from_year = request.form.get('from_year')
                 to_year = request.form.get('to_year')
                 is_search = True
+                search_query = f" - {exact_match} \"{movie_title}\", Genres: {genres},  Minimum rating: {minimum_rating}, From {from_year} to {to_year}"
     if is_search:
         movies = db.movies_with_string_in_name_query(movie_title, int(minimum_rating)*10,
                     genres.split(","), int(from_year), int(to_year), sub_string=(exact_match == "contains"))
@@ -41,7 +44,10 @@ def create_movie_body():
         name_index = 1
         rating_index = 18
 
+    movies.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None])  # TODO delete
     for i in range(0,len(movies)):
+        if movies[id_index] is None or movies[name_index] is None or movies[rating_index] is None:
+            continue
         poster_url = movies[i][poster_url_index]
         if movies[i][rating_index] is None:
             continue
@@ -63,7 +69,7 @@ def create_movie_body():
                         <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
                     </div>
                 </div>""")
-    return body, len(movies)
+    return body, len(movies), search_query
 
 
 @app.route('/moviesingle', methods=['GET'])
@@ -72,31 +78,73 @@ def moviesingle():
     movie = db.get_movie(movie_id)[0]
 
     plot = movie[5]
-    year = movie[3].year
+    if plot is None:
+        plot = "Sorry, plot is not available"
+
+    if movie[3] is None:
+        year = "Sorry, year is not available"
+    else:
+        if movie[3].year is None:
+            year = "Sorry, year is not available"
+        else:
+            year = movie[3].year
+
     name = movie[1]
-    trailer = "https://www.youtube.com/watch?v=" + movie[10]
-    poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
-    date = str(movie[3])
-    runtime = str(movie[4])
-    rating = str(db.get_movie_rating(movie_id)[0][0]/10)[:3]
+    if name is None:
+        name = "Sorry, name is not available"
+
+    trailer = movie[10]
+    if trailer is not None:
+        trailer = "https://www.youtube.com/watch?v=" + movie[10]
+
+    if movie[9] is None:
+        poster = "/static/images/no_photo_availble.png"
+    else:
+        poster = "https://image.tmdb.org/t/p/w1280" + movie[9]
+
+    if movie[3] is None:
+        date = "Sorry, date is not available"
+    else:
+        date = str(movie[3])
+
+    if movie[4] is None:
+        runtime = "Sorry, runtime is not available"
+    else:
+        runtime = str(movie[4])
+
+    rating = db.get_movie_rating(movie_id)
+    if len(rating) == 0:
+        rating = "Sorry, rating is not available"
+    else:
+        rating = str(rating[0][0]/10)[:3] + " /10"
+
     director = db.get_movie_director(movie_id)
+    if director is None:
+        director = "Sorry, director's name is not available"
+
     actors = db.get_movie_actors(movie_id)
+    if len(actors) == 0:
+        actors.append("Sorry, actors names is not available")
 
-    genres_db = (db.get_movie_genres(movie_id)[0])[0].split(',')
-    genres = ""
-    for i in range(len(genres_db) - 1):
-        genres = genres + genres_db[i] + ", "
-    genres += genres_db[-1]
+    genres_db = db.get_movie_genres(movie_id)
+    if len(genres_db)==0:
+        genres = "Sorry, genres are not available"
+    else:
+        genres_db = (genres_db[0])[0].split(',')
+        genres = ""
+        for i in range(len(genres_db) - 1):
+            genres = genres + genres_db[i] + ", "
+        genres += genres_db[-1]
 
-    return render_template('/moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
+    return render_template('moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
                            date=date, poster=poster, trailer=trailer,
                            genres=genres, director=director, actors=actors, rating=rating)
 
 
 @app.route('/moviegrid', methods=['GET', 'POST'])
 def moviegrid():
-    body, num_of_res = create_movie_body()
-    return render_template('/moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res)
+    body, num_of_res, search_query = create_movie_body()
+    return render_template('moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res, search_query=search_query)
 
 
 @app.route('/facts', methods=['GET', 'POST'])
@@ -113,7 +161,8 @@ def fun_facts():
     if type(fact) is str:
         is_form_sent = False
         is_submitted = request.form.get('submit')
-        res = ''
+        res = []
+        res.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO - delete
         if fact == 'couples':
             search_query = ''
             if type(is_submitted) is str:
@@ -196,10 +245,12 @@ def fun_facts():
                                    res=res, movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4,
                                    search_query=search_query)
         elif fact == 'actors_awards':
+            search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
                     start_year = request.form.get('start_year')
+                    search_query = f" - From {start_year}"
                     start_year = int(start_year)
                     res = db.actors_movies_awards_query(start_year)
             init = ["", " display:none;"]
@@ -213,14 +264,16 @@ def fun_facts():
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
                                    res=res, first_name=1, last_name=2, movies_played=3,
-                                   total_awards=4, picture_URL=5)
+                                   total_awards=4, picture_URL=5, search_query=search_query)
         elif fact == 'movies_with_actors_by_name':
+            search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
                     exact_match = request.form.get('exact_match')
                     string_to_search = request.form.get('string_to_search')
                     res = db.movies_actors_with_string_in_name_query(string_to_search, exact_match == "contains")
+                    search_query = f" - {exact_match} \"{string_to_search}\""
             init = ["", " display:none;"]
             couples = ["", " display:none;"]
             popular_directors = ["", " display:none;"]
@@ -231,7 +284,8 @@ def fun_facts():
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
-                                   res=res, title=1, num_of_actors=2, actors_string=3, poster_URL=4)
+                                   res=res, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
+                                   search_query=search_query)
 
     return render_template('facts.html', selected=selected, display=display, init=init,
                            couples=couples, popular_directors=popular_directors,
@@ -243,7 +297,8 @@ def fun_facts():
 def celebritygrid():
 
     is_submitted = request.form.get('submit')
-    res = ''
+    res = []
+    res.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO delete
     user_search = ''
     if type(is_submitted) is str:
         if is_submitted == 'submit': # TODO delete this if
@@ -276,6 +331,7 @@ def index():
                 movies_info = AuxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
                 num_of_movies = min(11, len(movies_info))
                 for movie_index in range(num_of_movies):
+
                     bodyMor += movies_info[movie_index].get_html_body()
                 return render_template('index.html', body=bodyMor)
             else:

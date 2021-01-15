@@ -8,7 +8,11 @@
 					<p class="pad-change">Found <span>{{ res|length }} results</span>{{search_query}}</p>
 				</div>
 				<div class="celebrity-items">
-					{% for row in res %}
+					{% for row in res if not (row[director_first_name] is none
+					    or row[director_last_name] is none or row[movie_ID] is none or row[title] is none
+					    or row[num_of_actors] is none or row[budget] is none or row[total_budget] is none
+					    or row[movie_index] is none or row[movie_max_index] is none) %}
+
                             {% if row[budget]|int>=1000000 %}
                                 {% set bdgt = ((row[budget]|int / 1000000)|int)|string + "M" %}
                             {% endif %}

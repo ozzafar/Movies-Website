@@ -4,10 +4,12 @@
 			<div class="col-md-8 col-sm-12 col-xs-12">
                 {% if is_form_sent %}
 				<div class="topbar-filter">
-					<p style="padding-right: 300px;">Found <span>1,000 actors</span> in total</p>
+					<p style="padding-right: 0px;">Found <span>{{ res|length }} results</span>{{search_query}}</p>
 				</div>
 				<div class="flex-wrap-movielist">
-					{% for row in res %}
+					{% for row in res if not (res[first_name] is none or res[last_name] is none
+					    or res[movies_played] is none or res[total_awards] is none) %}
+
                     <div class="movie-item-style-2 movie-item-style-1">
                         {% if row[picture_URL] is none %}
                             {% set picture = "/static/images/no_photo_availble.png" %}

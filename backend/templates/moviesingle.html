@@ -64,7 +64,7 @@
 						</li>
 						<li class="dropdown first">
 							<a href="/celebritygrid" class="btn btn-default lv1">
-								celebrities <i class="fa" aria-hidden="true"></i>
+								popular actors <i class="fa" aria-hidden="true"></i>
 							</a>
 						</li>
 						<li class="dropdown first">
@@ -95,12 +95,14 @@
 			<div class="col-md-4 col-sm-12 col-xs-12">
 				<div class="movie-img sticky-sb">
 					<img src={{poster}} alt="{{name}}">
+                    {% if trailer is not none %}
 					<div class="movie-btn">	
 						<div class="btn-transform transform-vertical red">
 							<div><a href="#" class="item item-1 redbtn"> <i class="ion-play"></i> Watch Trailer</a></div>
 							<div><a href={{trailer}} target="_blank" class="item item-2 redbtn hvr-grow"><i class="ion-play"></i></a></div>
 						</div>
 					</div>
+                    {% endif %}
 				</div>
 			</div>
 			<div class="col-md-8 col-sm-12 col-xs-12">
@@ -109,14 +111,14 @@
 					<div class="movie-rate">
 						<div class="rate">
 							<i class="ion-android-star"></i>
-							<p><span>{{rating}}</span> /10<br>
+							<p><span>{{rating}}</span><br>
 							</p>
 						</div>
 					</div>
 					<div class="movie-tabs">
 						<div class="tabs">
 							<ul class="tab-links tabs-mv">
-								<li class="active"><a href="#overview">Overview</a></li>
+								<li class="active"><h3>Overview</h3></li>
 							</ul>
 						    <div class="tab-content">
 						        <div id="overview" class="tab active">
@@ -130,56 +132,56 @@
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[0]}}</a>
+														<p>{{actors[0]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[1]}}</a>
+														<p>{{actors[1]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[2]}}</a>
+														<p>{{actors[2]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[3]}}</a>
+														<p>{{actors[3]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[4]}}</a>
+														<p>{{actors[4]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[5]}}</a>
+														<p>{{actors[5]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[6]}}</a>
+														<p>{{actors[6]}}</p>
 													</div>
 												</div>
 											</div>
 											<div class="mvcast-item">
 												<div class="cast-it">
 													<div class="cast-left">
-														<a href="#">{{actors[7]}}</a>
+														<p>{{actors[7]}}</p>
 													</div>
 												</div>
 											</div>
@@ -187,7 +189,7 @@
 						            	<div class="col-md-4 col-xs-12 col-sm-12">
 						            		<div class="sb-it">
 						            			<h6>Director: </h6>
-						            			<p><a href="#">{{director}}</a></p>
+						            			<p>{{director}}</p>
 						            		</div>
 						            		<div class="sb-it">
 						            			<h6>Genres:</h6>
