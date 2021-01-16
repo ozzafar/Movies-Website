@@ -105,23 +105,23 @@ class DBbackend:
         return rows
 
     # Fun Facts
-    def directors_movies_budget_query(self, budget, actors_number):
+    def directors_movies_budget_query(self, total_budget, companies_number):
 
         query = f"""
         SELECT t.person_ID, t.first_name AS director_first_name, t.last_name AS director_last_name,
-            t.picture_URL AS director_picture, t.movie_ID, t.title, t.num_of_actors, t.budget, t.total_budget,
+            t.picture_URL AS director_picture, t.movie_ID, t.title, t.num_of_companies, t.budget, t.total_budget,
             t.poster_URL AS movie_poster, t.movie_index, t.max_index
         FROM (
-            SELECT person_ID, first_name, last_name, title, num_of_actors, budget, picture_URL, poster_URL,
-                movie_ID, 
-                SUM(budget) OVER w total_budget,
-                ROW_NUMBER() OVER w movie_index,
-                COUNT(*) OVER w max_index
-            FROM Movie_numOfActors_Director mad
-            WHERE mad.num_of_actors >={actors_number} AND mad.budget>=10000 # TODO delete last condition
-            WINDOW w AS (PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC)
+            SELECT person_ID, first_name, last_name, title, num_of_companies, budget, picture_URL, poster_URL,
+            movie_ID, 
+            SUM(budget) OVER w total_budget,
+            ROW_NUMBER() OVER(PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC) movie_index,
+            COUNT(*) OVER w max_index
+            FROM Movie_numOfCompanies_Director mcd
+            WHERE mcd.num_of_companies >={companies_number}
+            WINDOW w AS (PARTITION BY person_ID, first_name, last_name, picture_URL)
           ) t
-        WHERE t.total_budget>={budget}
+        WHERE t.total_budget>={total_budget}
         ORDER BY director_first_name, director_last_name, budget DESC
         """
 
@@ -252,19 +252,21 @@ class DBbackend:
     # VIEW FOR directors_movies_budget
     def directors_movies_budget_view(self):
 
-        query = """
-        CREATE OR REPLACE VIEW Movie_numOfActors_Director AS
-            SELECT m.movie_ID, m.title, rm.num_of_actors, m.budget, mc.person_ID, p.first_name, p.last_name,
+        query ="""
+        CREATE OR REPLACE VIEW Movie_numOfCompanies_Director AS
+            SELECT m.movie_ID, m.title, rm.num_of_companies, m.budget, mc.person_ID, p.first_name, p.last_name,
                 p.picture_URL, m.poster_URL
             FROM Movies m, Person p, Movies_Crew mc, (
-                          SELECT m.movie_ID, COUNT(*) as num_of_actors
-                          FROM Movies m, Movies_Actors ma
-                          WHERE m.movie_ID = ma.movie_ID
-                          GROUP BY m.movie_ID
-                          ) rm
+                SELECT m.movie_ID, COUNT(*) as num_of_companies
+                FROM Movies m, Movie_Companies mc
+                WHERE m.movie_ID = mc.movie_ID
+                GROUP BY m.movie_ID
+              ) rm
             WHERE mc.role ="Director" AND mc.movie_ID = m.movie_ID
-                AND m.movie_ID=rm.movie_ID AND mc.person_ID = p.person_ID
-            """
+            AND m.movie_ID=rm.movie_ID AND mc.person_ID = p.person_ID
+        """
+
+
 
         self.execute_sql(query)
 
