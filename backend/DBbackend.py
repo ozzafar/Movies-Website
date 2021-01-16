@@ -180,6 +180,7 @@ class DBbackend:
                 string_to_search_arr[i] = "+" + string_to_search_arr[i]
                 if sub_string:
                     string_to_search_arr[i] = string_to_search_arr[i] + "*"
+                # add space after each word
             string_to_search = " ".join(string_to_search_arr)
 
 
@@ -220,8 +221,8 @@ class DBbackend:
             m.poster_URL
         FROM Movies m, Movies_Actors ma, Person p
         WHERE m.movie_ID = ma.movie_ID AND p.person_ID = ma.person_ID
-            AND (Match(p.first_name) AGAINST("{string_to_search}" IN BOOLEAN MODE) OR
-                Match(p.last_name) AGAINST("{string_to_search}" IN BOOLEAN MODE))
+            AND (Match(p.first_name, p.last_name) 
+            AGAINST("{string_to_search}" IN BOOLEAN MODE))
         GROUP BY m.movie_ID, m.title
         ORDER BY num_of_actors DESC
         """
