@@ -53,19 +53,19 @@ class DBbackend:
     # region Queries
 
     # user_genres is an array
-    # Opening page
     def recommendations_query(self, user_genres, min_len, max_len, start_year, end_year):
         user_genres_string = self.parse_genres("r", user_genres)
 
         query = f"""
-        SELECT r.movie_ID, r.title, GROUP_CONCAT(r.genre), r.released, r.run_time, r.popularity, r.poster_URL
+        SELECT r.movie_ID, r.title, GROUP_CONCAT(r.genre) AS genres, r.released, r.run_time, r.popularity, 
+                r.poster_URL
         FROM Recommendations r
         WHERE ({user_genres_string}) AND r.popularity_rank <= 10
             AND EXTRACT(YEAR FROM r.released) BETWEEN {start_year} AND {end_year}
             AND (EXTRACT(HOUR FROM r.run_time)*60+EXTRACT(MINUTE FROM r.run_time))
             BETWEEN {min_len} AND {max_len}
         GROUP BY r.movie_ID, r.title, r.released, r.run_time, r.popularity
-        ORDER BY r.popularity DESC
+        ORDER BY genres, r.popularity DESC
         """
         rows = self.execute_sql(query)
         return rows
@@ -91,10 +91,12 @@ class DBbackend:
 
         query = f"""
         SELECT director_ID, director_first_name, director_last_name, director_pic, actor_ID, actor_first_name, 
-            actor_last_name, actor_pic, SUM(co_operations) AS co_operations, GROUP_CONCAT(genre SEPARATOR "<br>") AS user_genres
+            actor_last_name, actor_pic, SUM(co_operations) AS co_operations, 
+            GROUP_CONCAT(genre SEPARATOR "<br>") AS user_genres
         FROM Director_Actor_Genre_NumOfMovies dagm
         WHERE ({user_genres_string})
-        GROUP BY director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, actor_last_name
+        GROUP BY director_ID, director_first_name, director_last_name, actor_ID, actor_first_name, 
+            actor_last_name
         HAVING co_operations >= {number_of_movies}
         ORDER BY co_operations DESC
         """
@@ -103,7 +105,7 @@ class DBbackend:
         return rows
 
     # Fun Facts
-    def directors_movies_budget_query(self, budget, actors_number=1):
+    def directors_movies_budget_query(self, budget, actors_number):
 
         query = f"""
         SELECT t.person_ID, t.first_name AS director_first_name, t.last_name AS director_last_name,
@@ -128,19 +130,19 @@ class DBbackend:
 
     # user can ignore awards
     # Fun Facts
-    def countries_movies_query(self, movie_budget, movie_awards=0):
+    def countries_movies_query(self, movie_budget, movie_awards):
 
         query = f"""
         SELECT cmn.country, cmn.movie_ID, cmn.title, cmn.budget, cmn.awards, cmn.poster_URL AS movie_poster
         FROM(
             SELECT pc.country, m.title, m.budget, m.awards, m.poster_URL, m.movie_ID,
                 ROW_NUMBER() OVER(Partition BY pc.country
-                ORDER BY m.budget, m.awards DESC) AS ranked_budget
+                ORDER BY m.awards DESC, m.budget DESC) AS ranked_budget
             FROM Production_Countries pc, Movie_Countries mc, Movies m
             WHERE pc.prod_country_ID = mc.prod_country_ID AND mc.movie_ID = m.movie_ID
                         AND m.budget >= {movie_budget} AND m.awards >= {movie_awards}
             ) cmn
-        WHERE cmn.ranked_budget <= 10 # for each country return only 10 countries
+        WHERE cmn.ranked_budget <= 10
         ORDER BY cmn.country, cmn.awards DESC, cmn.budget DESC
         """
 
@@ -245,7 +247,7 @@ class DBbackend:
 
     # region VIEWS
 
-    # VIEW FOR directors_movies_budget, directors_budget
+    # VIEW FOR directors_movies_budget
     def directors_movies_budget_view(self):
 
         query = """
@@ -270,26 +272,29 @@ class DBbackend:
 
         query = """
         CREATE OR REPLACE VIEW Director_Actor_Genre_NumOfMovies AS
-            SELECT g.genre_ID, g.genre, COUNT(*) AS co_operations, p1.person_ID AS director_ID, p1.first_name AS director_first_name, p1.last_name AS director_last_name,
-                p1.picture_URL AS director_pic,p2.person_ID AS actor_ID, p2.first_name AS actor_first_name, p2.last_name AS actor_last_name, p2.picture_URL AS actor_pic
+            SELECT g.genre_ID, g.genre, COUNT(*) AS co_operations, p1.person_ID AS director_ID, 
+                p1.first_name AS director_first_name, p1.last_name AS director_last_name,
+                p1.picture_URL AS director_pic,p2.person_ID AS actor_ID, p2.first_name AS actor_first_name, 
+                p2.last_name AS actor_last_name, p2.picture_URL AS actor_pic
             FROM Person p1, Person p2, Movies_Crew mc, Movies_Actors ma, Movies m, Movie_Genres mg, Genres g
             WHERE p1.person_ID=mc.person_ID AND p2.person_ID=ma.person_ID AND
                 mc.role = "Director" AND mc.movie_ID=m.movie_ID AND ma.movie_ID=m.movie_ID
                 AND m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
-            GROUP BY g.genre_ID, g.genre, p1.person_ID, p1.first_name, p1.last_name, p2.person_ID, p2.first_name, p2.last_name
+            GROUP BY g.genre_ID, g.genre, p1.person_ID, p1.first_name, p1.last_name, p2.person_ID, 
+                p2.first_name, p2.last_name
             """
 
         self.execute_sql(query)
 
-    #view for recommendations query
+    #VIEW for recommendations query
     def recommendations_view(self):
 
         query= """
         CREATE OR REPLACE VIEW Recommendations AS
             SELECT g.genre, m.movie_ID, m.title, m.released, m.run_time,
               (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 AS popularity,
-              ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) AS popularity_rank,
-              m.poster_URL
+              ROW_NUMBER() OVER(Partition BY g.genre ORDER BY (ms.rotten_tomatoes+ms.metacritic+ms.imdb)/3 DESC) 
+                AS popularity_rank, m.poster_URL
             FROM Movies m, Movie_Genres mg, Genres g, Movie_Score ms
             WHERE m.movie_ID = mg.movie_ID AND mg.genre_ID = g.genre_ID
             AND m.movie_ID = ms.movie_ID
@@ -301,7 +306,8 @@ class DBbackend:
 
         query="""
         CREATE OR REPLACE VIEW Popular_Actors AS
-            SELECT p.person_ID, p.first_name, p.last_name, p.gender, p.picture_URL, m.movie_ID, m.released AS movie_released, 
+            SELECT p.person_ID, p.first_name, p.last_name, p.gender, p.picture_URL, m.movie_ID, 
+                m.released AS movie_released, 
                 (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS movie_popularity
             FROM Person p, Movies_Actors ma, Movie_Score ms, Movies m
             WHERE p.person_ID = ma.person_ID AND ma.movie_ID = ms.movie_ID AND ma.movie_ID=m.movie_ID
