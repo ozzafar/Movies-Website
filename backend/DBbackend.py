@@ -169,7 +169,7 @@ class DBbackend:
 
     # Movies Grid
     def movies_with_string_in_name_query(self, string_to_search, movie_score, user_genres, start_year,
-                                         end_year, sub_string=False):
+                                         end_year, sub_string):
         string_to_search_arr = string_to_search.split(" ")
         if len(string_to_search_arr) == 1:
             string_to_search = "+" + string_to_search
@@ -180,13 +180,15 @@ class DBbackend:
                 string_to_search_arr[i] = "+" + string_to_search_arr[i]
                 if sub_string:
                     string_to_search_arr[i] = string_to_search_arr[i] + "*"
+                # add space after each word
             string_to_search = " ".join(string_to_search_arr)
 
 
         user_genres_string = self.parse_genres("g", user_genres)
 
         query = f"""
-        SELECT m.movie_ID, m.title, GROUP_CONCAT(g.genre), (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity, m.poster_URL
+        SELECT m.movie_ID, m.title, GROUP_CONCAT(g.genre), 
+            (ms.rotten_tomatoes +  ms.metacritic + ms.imdb)/3 AS popularity, m.poster_URL
         FROM Movies m, Movie_Score ms, Movie_Genres mg, Genres g
         WHERE Match(m.title) AGAINST("{string_to_search}" IN BOOLEAN MODE)
               AND m.movie_ID = ms.movie_ID
@@ -200,7 +202,7 @@ class DBbackend:
         return rows
 
     # Fun Facts/Movies Grid
-    def movies_actors_with_string_in_name_query(self, string_to_search, sub_string=False):
+    def movies_actors_with_string_in_name_query(self, string_to_search, sub_string):
 
         string_to_search_arr = string_to_search.split(" ")
         if len(string_to_search_arr) == 1:
@@ -220,8 +222,8 @@ class DBbackend:
             m.poster_URL
         FROM Movies m, Movies_Actors ma, Person p
         WHERE m.movie_ID = ma.movie_ID AND p.person_ID = ma.person_ID
-            AND (Match(p.first_name) AGAINST("{string_to_search}" IN BOOLEAN MODE) OR
-                Match(p.last_name) AGAINST("{string_to_search}" IN BOOLEAN MODE))
+            AND (Match(p.first_name, p.last_name) 
+            AGAINST("{string_to_search}" IN BOOLEAN MODE))
         GROUP BY m.movie_ID, m.title
         ORDER BY num_of_actors DESC
         """

@@ -44,32 +44,31 @@ def create_movie_body():
         name_index = 1
         rating_index = 18
 
-    if len(movies) > 0:
-        for i in range(0,len(movies)):
+    for i in range(0,len(movies)):
 
-            if movies[id_index] is None or movies[name_index] is None or movies[rating_index] is None:
-                continue
-            poster_url = movies[i][poster_url_index]
-            if movies[i][rating_index] is None:
-                continue
-            if poster_url != None:
-                poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][poster_url_index]
-            else:
-                poster_url_full = "/static/images/no_photo_availble.png"
-            id = str(movies[i][id_index])
-            name = movies[i][name_index]
-            rating = str(movies[i][rating_index] / 10)[:3]
-            body += (f"""
-                    <div class="movie-item-style-2 movie-item-style-1">
-                        <img src={poster_url_full} alt="">
-                        <div class="hvr-inner">
-                            <a  href=moviesingle?movie={id}> Read more <i class="ion-android-arrow-dropright"></i> </a>
-                        </div>
-                        <div class="mv-item-infor">
-                            <h6><a href=moviesingle?movie={id}> {name} </a></h6>
-                            <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
-                        </div>
-                    </div>""")
+        if movies[i][id_index] is None or movies[i][name_index] is None or movies[i][rating_index] is None:
+            continue
+        poster_url = movies[i][poster_url_index]
+        if movies[i][rating_index] is None:
+            continue
+        if poster_url != None:
+            poster_url_full = "https://image.tmdb.org/t/p/w1280" + movies[i][poster_url_index]
+        else:
+            poster_url_full = "/static/images/no_photo_availble.png"
+        id = str(movies[i][id_index])
+        name = movies[i][name_index]
+        rating = str(movies[i][rating_index] / 10)[:3]
+        body += (f"""
+                <div class="movie-item-style-2 movie-item-style-1">
+                    <img src={poster_url_full} alt="">
+                    <div class="hvr-inner">
+                        <a  href=moviesingle?movie={id}> Read more <i class="ion-android-arrow-dropright"></i> </a>
+                    </div>
+                    <div class="mv-item-infor">
+                        <h6><a href=moviesingle?movie={id}> {name} </a></h6>
+                        <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
+                    </div>
+                </div>""")
     return body, len(movies), search_query
 
 
