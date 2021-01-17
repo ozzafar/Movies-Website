@@ -109,7 +109,7 @@
 		<div class="row ipad-width2">
 			<div class="col-md-9 col-sm-12 col-xs-12">
 				<div class="topbar-filter">
-					<p class="pad-change" style="padding-right: 370px;">Found <span>{{ res|length }} popular actors</span> in total {{ user_search }}</p>
+					<p class="pad-change" style="padding-right: 370px;">Found <span>{{ num_of_res }} popular actors</span> in total {{ user_search }}</p>
 				</div>
 				<div class="celebrity-items">
 					{% for row in res if not (res[first_name] is none or res[last_name] is none
@@ -129,12 +129,25 @@
                         </div>
 					{% endfor %}
 				</div>
+				<div class="topbar-filter" style="padding-left: 520px;">
+					<label>Page {{page_no}} of {{num_of_pages}}:</label>
+					<select name="page" id="pagination">
+						{% for page in pages %}
+						{% if page == page_no %}
+							{% set addSelectedAttribute = "selected" %}
+						{% else %}
+							{% set addSelectedAttribute = "" %}
+						{% endif %}
+						<option value="{{page}}" {{addSelectedAttribute}}>{{page}}</option>
+						{% endfor %}
+					</select>
+				</div>
 			</div>
 			<div class="col-md-3 col-xs-12 col-sm-12">
 				<div class="sidebar">
 						<div class="searh-form">
 						<h4 class="sb-title">Search popular actors</h4>
-						<form class="form-style-1 celebrity-form" action="" method="post">
+						<form class="form-style-1 celebrity-form" action="" method="get">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Minimum rating</label>
@@ -196,6 +209,22 @@
 <script src="static/js/plugins.js"></script>
 <script src="static/js/plugins2.js"></script>
 <script src="static/js/custom.js"></script>
+<script type="text/javascript">
+	$("#pagination").change(function () {
+		let pageURL = window.location.href;
+		let page_index = pageURL.indexOf("page");
+		if (page_index === -1) {
+			if (pageURL.indexOf("?") === -1) location.href = pageURL+"?page="+$(this).val();
+			else location.href = pageURL+"&page="+$(this).val();
+		}
+		else {
+			let last_char_of_page = pageURL.indexOf("&", page_index);
+			let newURL = pageURL.substring(0,page_index+5)+$(this).val();
+			if (last_char_of_page !== -1) newURL += pageURL.substring(last_char_of_page);
+			location.href = newURL;
+		}
+	});
+</script>
 </body>
 
 

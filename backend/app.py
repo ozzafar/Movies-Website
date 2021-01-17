@@ -1,3 +1,4 @@
+import math
 from DBbackend import DBbackend
 import html
 import AuxiliaryFuncs
@@ -8,7 +9,7 @@ app = Flask(__name__)
 
 db = DBbackend()
 
-def create_movie_body():
+def create_movie_body(page):
     is_search = False
 
     body = ""
@@ -16,16 +17,16 @@ def create_movie_body():
     movies=[]
 
     # search fields:
-    if 'submit' in request.form.keys():
-        is_submitted = request.form.get('submit')
+    if 'submit' in request.args.keys():
+        is_submitted = request.args.get('submit')
         if type(is_submitted) is str:
             if is_submitted == 'submit':
-                exact_match = request.form.get('exact_match')
-                movie_title = request.form.get('movie_title')
-                genres = request.form.get('genres')
-                minimum_rating = request.form.get('minimum_rating')
-                from_year = request.form.get('from_year')
-                to_year = request.form.get('to_year')
+                exact_match = request.args.get('exact_match')
+                movie_title = request.args.get('movie_title')
+                genres = request.args.get('genres')
+                minimum_rating = request.args.get('minimum_rating')
+                from_year = request.args.get('from_year')
+                to_year = request.args.get('to_year')
                 is_search = True
                 search_query = f" - {exact_match} \"{movie_title}\", Genres: {genres},  Minimum rating: {minimum_rating}, From {from_year} to {to_year}"
     if is_search:
@@ -43,6 +44,12 @@ def create_movie_body():
         id_index = 0
         name_index = 1
         rating_index = 18
+
+    # pagination
+    num_of_res = len(movies)
+    first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
+    last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
+    movies = movies[first_result:min(len(movies), last_result)]
 
     for i in range(0,len(movies)):
 
@@ -69,7 +76,7 @@ def create_movie_body():
                         <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
                     </div>
                 </div>""")
-    return body, len(movies), search_query
+    return body, num_of_res, search_query
 
 
 @app.route('/moviesingle', methods=['GET'])
@@ -143,8 +150,20 @@ def moviesingle():
 
 @app.route('/moviegrid', methods=['GET', 'POST'])
 def moviegrid():
-    body, num_of_res, search_query = create_movie_body()
-    return render_template('moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res, search_query=search_query)
+    # pagination
+    page = request.args.get('page')
+    if type(page) is str:
+        page = int(page)
+    else:
+        page = 1
+
+    body, num_of_res, search_query = create_movie_body(page)
+
+    list_of_pages = range(1, math.ceil(num_of_res / NUM_OF_RESULTS_PER_PAGE_2) + 1)
+
+    return render_template('moviegrid.html', body=body, genres=list_of_genres_db(), num_of_res=num_of_res,
+                           search_query=search_query, page_no=page, num_of_pages=len(list_of_pages),
+                           pages=list_of_pages)
 
 
 @app.route('/facts', methods=['GET', 'POST'])
@@ -160,7 +179,7 @@ def fun_facts():
     display = 1
     if type(fact) is str:
         is_form_sent = False
-        is_submitted = request.form.get('submit')
+        is_submitted = request.args.get('submit')
         res = []
 
         if fact == 'couples':
@@ -168,8 +187,8 @@ def fun_facts():
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
-                    num_of_common_movies = int(request.form.get('number_of_common_movies'))
-                    genres = str(request.form.get('genres'))
+                    num_of_common_movies = int(request.args.get('number_of_common_movies'))
+                    genres = str(request.args.get('genres'))
                     genres_lst = genres.split(',')
                     genres_lst = [x.strip() for x in genres_lst]
                     search_query = f" - Number of common movies: {num_of_common_movies}, Genres: {genres}"
@@ -180,13 +199,25 @@ def fun_facts():
             countries_movies = ["", " display:none;"]
             actors_awards = ["", " display:none;"]
             movies_with_actors_by_name = ["", " display:none;"]
+            # pagination
+            num_of_res = len(res)
+            page = request.args.get('page')
+            if type(page) is str:
+                page = int(page)
+            else:
+                page = 1
+            list_of_pages = range(1, math.ceil(num_of_res / NUM_OF_RESULTS_PER_PAGE_2) + 1)
+            first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
+            last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
+            res = res[first_result:min(num_of_res, last_result)]
             return render_template('facts_couples.html', selected=selected, display=display, init=init, couples=couples,
                                    popular_directors=popular_directors, countries_movies=countries_movies,
                                    actors_awards=actors_awards, movies_with_actors_by_name=movies_with_actors_by_name,
                                    is_form_sent=is_form_sent, genres=list_of_genres_db(), res=res,
                                    director_pic=3, director_first_name=1, director_last_name=2,
                                    actor_pic=7, actor_first_name=5, actor_last_name=6, co_operations=8, user_genres=9,
-                                   search_query=search_query)
+                                   search_query=search_query, page_no=page, num_of_pages=len(list_of_pages),
+                                   pages=list_of_pages, num_of_res=num_of_res, fact=fact)
         elif fact == 'popular_directors':
             # TODO add <br> every 18 chars in long movie/people names
             search_query = ""
@@ -296,22 +327,37 @@ def fun_facts():
 @app.route('/celebritygrid', methods=['GET', 'POST'])
 def celebritygrid():
 
-    is_submitted = request.form.get('submit')
+
+    # form
+    is_submitted = request.args.get('submit')
     res = []
 
     user_search = ''
     if type(is_submitted) is str:
         if is_submitted == 'submit': # TODO delete this if
-            minimum_rating = request.form.get('minimum_rating')
-            start_year = request.form.get('from_year')
-            end_year = request.form.get('to_year')
+            minimum_rating = request.args.get('minimum_rating')
+            start_year = request.args.get('from_year')
+            end_year = request.args.get('to_year')
             user_search = f", Minimum rating {minimum_rating} from {start_year} to {end_year}"
             res = db.popular_actors_query(int(minimum_rating)*10, int(start_year), int(end_year))
     else:
         res = db.popular_actors_query(0, 1500, 3000)
 
+    # pagination
+    num_of_res = len(res)
+    page = request.args.get('page')
+    if type(page) is str:
+        page = int(page)
+    else:
+        page = 1
+    list_of_pages = range(1, math.ceil(len(res)/NUM_OF_RESULTS_PER_PAGE)+1)
+    first_result = (NUM_OF_RESULTS_PER_PAGE*(page-1))
+    last_result = NUM_OF_RESULTS_PER_PAGE*page
+    res = res[first_result:min(len(res), last_result)]
+
     return render_template('celebritygrid.html', res=res, user_search=user_search,
-                           first_name=1, last_name=2, num_of_movies=4, picture_URL=5)
+                           first_name=1, last_name=2, num_of_movies=4, picture_URL=5,
+                           page_no=page, num_of_pages=len(list_of_pages), pages=list_of_pages, num_of_res=num_of_res)
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
@@ -330,9 +376,18 @@ def index():
             if release == 'pre' or release == 'old' or release == 'new' or release == 'all':
                 movies_info = AuxiliaryFuncs.query_to_index_movie(db, genres, movie_length, release)
                 num_of_movies = min(20, len(movies_info))
-                for movie_index in range(num_of_movies):
 
+                bodyMor = "<div class=\"slick-multiItemSlider\">"
+                for movie_index in range(num_of_movies):
                     bodyMor += movies_info[movie_index].get_html_body()
+                bodyMor += "</div>"
+
+                if len(movies_info) == 0:
+                    bodyMor = """
+                    <p style="font-size: 20px; background-color: white; border-radius: 20px; padding: 20px; color: black; font-weight: bold;">
+                    Found 0 movies
+                    <br>
+                    <a href="/">Click here to change your preferences</a></p>"""
                 return render_template('index.html', body=bodyMor)
             else:
                 filename = 'slider2'

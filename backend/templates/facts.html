@@ -200,6 +200,22 @@ $( "#choose_query" ).change(function() {
 		return false;
 	}
 </script>
+<script type="text/javascript">
+	$("#pagination").change(function () {
+		let pageURL = window.location.href;
+		let page_index = pageURL.indexOf("page");
+		if (page_index === -1) {
+			if (pageURL.indexOf("?") === -1) location.href = pageURL+"?page="+$(this).val();
+			else location.href = pageURL+"&page="+$(this).val();
+		}
+		else {
+			let last_char_of_page = pageURL.indexOf("&", page_index);
+			let newURL = pageURL.substring(0,page_index+5)+$(this).val();
+			if (last_char_of_page !== -1) newURL += pageURL.substring(last_char_of_page);
+			location.href = newURL;
+		}
+	});
+</script>
 </body>
 
 

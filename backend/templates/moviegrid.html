@@ -96,7 +96,7 @@
                     <p id="" style="color: black; margin: 0;'''selected''' ">
                         Search movies by name (X), genres, minimum rating (R) and range of years (Y1-Y2). The query returns movies that X appears in their name, have rating of at least R, were filmed in the years Y1-Y2 and categorized under at least one genre in genres.
                         <br>
-                        X can be treated as a sub-string if Search Type is "Contains"
+                        X can be treated as a sub-string if Search Type is "Starts with"
                     </p>
                 </div>
 			</div>
@@ -113,18 +113,30 @@
 				<div class="flex-wrap-movielist">
 					{{body|safe}}
 				</div>
-
+				<div class="topbar-filter" style="padding-left: 430px;">
+					<label>Page {{page_no}} of {{num_of_pages}}:</label>
+					<select name="page" id="pagination">
+						{% for page in pages %}
+						{% if page == page_no %}
+							{% set addSelectedAttribute = "selected" %}
+						{% else %}
+							{% set addSelectedAttribute = "" %}
+						{% endif %}
+						<option value="{{page}}" {{addSelectedAttribute}}>{{page}}</option>
+						{% endfor %}
+					</select>
+				</div>
 			</div>
 			<div class="col-md-4 col-sm-12 col-xs-12">
 				<div class="sidebar">
 					<div class="searh-form">
 						<h4 class="sb-title">Search for movie</h4>
-						<form class="form-style-1" action="" method="post" onsubmit="return validate_form();">
+						<form class="form-style-1" action="" method="get" onsubmit="return validate_form();">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Search type</label>
 									<select name="exact_match">
-										<option value="contains">Contains</option>
+										<option value="contains">Starts with</option>
 										<option value="exact">Exact match</option>
 									</select>
 								</div>
@@ -215,6 +227,22 @@
 		alert('You must choose at least one genre');
 		return false;
 	}
+</script>
+<script type="text/javascript">
+	$("#pagination").change(function () {
+		let pageURL = window.location.href;
+		let page_index = pageURL.indexOf("page");
+		if (page_index === -1) {
+			if (pageURL.indexOf("?") === -1) location.href = pageURL+"?page="+$(this).val();
+			else location.href = pageURL+"&page="+$(this).val();
+		}
+		else {
+			let last_char_of_page = pageURL.indexOf("&", page_index);
+			let newURL = pageURL.substring(0,page_index+5)+$(this).val();
+			if (last_char_of_page !== -1) newURL += pageURL.substring(last_char_of_page);
+			location.href = newURL;
+		}
+	});
 </script>
 </body>
 
