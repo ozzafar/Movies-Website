@@ -120,10 +120,10 @@
                         {% else %}
                             {% set picture = "https://image.tmdb.org/t/p/w300" + row[picture_URL]|string %}
                         {% endif %}
-                        <div class="ceb-item">
+                        <div class="ceb-item" style="width: 270px;">
                             <img src="{{ picture }}" width="270" height="400">
                             <div class="ceb-infor">
-                                <h2>{{ row[first_name] }} {{ row[last_name] }}</h2>
+                                <h2><a style="color:white;">{{ row[first_name] }} {{ row[last_name] }}</a></h2>
                                 <span>Number of Movies: {{ row[num_of_movies] }}</span>
                             </div>
                         </div>

@@ -22,17 +22,17 @@
                             {% set actor_picture = "https://image.tmdb.org/t/p/w1280" + row[actor_pic]|string %}
                         {% endif %}
 
-					<div class="ceb-item">
+					<div class="ceb-item" style="width: 300px;">
 						<img src="{{ director_picture }}" alt="" width="300" height="450">
 						<div class="ceb-infor">
-							<h3 style="color: white;">{{row[director_first_name]}} {{row[director_last_name]}}</h3>
+							<h2><a style="color:white;">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
 							<span>director</span>
 						</div>
 					</div>
-					<div class="ceb-item">
+					<div class="ceb-item" style="width: 300px;">
 						<img src="{{ actor_picture }}" alt="" width="300" height="450">
 						<div class="ceb-infor">
-							<h3 style="color: white;">{{row[actor_first_name]}} {{row[actor_last_name]}}</h3>
+							<h2><a style="color:white;">{{row[actor_first_name]}} {{row[actor_last_name]}}</a></h2>
 							<span>actor</span>
 						</div>
 					</div>

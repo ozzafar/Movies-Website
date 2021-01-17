@@ -9,12 +9,13 @@ app = Flask(__name__)
 
 db = DBbackend()
 
+
 def create_movie_body(page):
     is_search = False
 
     body = ""
     search_query = ""
-    movies=[]
+    movies = []
 
     # search fields:
     if 'submit' in request.args.keys():

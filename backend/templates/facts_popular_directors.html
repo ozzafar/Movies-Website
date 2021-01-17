@@ -32,14 +32,14 @@
                                 {% set movie_picture = "https://image.tmdb.org/t/p/w1280" + row[movie_poster]|string %}
                             {% endif %}
 
-					<div class="ceb-item">
+					<div class="ceb-item" style="width:270px;">
 						<img src="{{ director_picture }}" alt="" width="300" height="450">
 						<div class="ceb-infor">
-							<h3 style="color: white;">{{row[director_first_name]}} {{row[director_last_name]}}</h3>
+							<h2><a style="color:white;">{{row[director_first_name]}} {{row[director_last_name]}}</a></h2>
 							<span>director</span>
 						</div>
 					</div>
-					<div class="ceb-item">
+					<div class="ceb-item" style="width:270px;">
 						<a href="/moviesingle?movie={{row[movie_ID]}}"><img src="{{movie_picture}}" alt=""
                                                                            width="300" height="450"></a>
 						<div class="ceb-infor">
