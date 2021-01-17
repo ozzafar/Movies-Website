@@ -5,7 +5,7 @@
                 {% if is_form_sent %}
 
 				<div class="topbar-filter">
-					<p class="pad-change">Found <span>{{ res|length }} results</span>{{search_query}}</p>
+					<p class="pad-change">Found <span>{{ num_of_res }} results</span>{{search_query}}</p>
 				</div>
 				<div class="celebrity-items">
 					{% for row in res if not (row[director_first_name] is none
@@ -35,7 +35,7 @@
 					<div class="ceb-item">
 						<img src="{{ director_picture }}" alt="" width="300" height="450">
 						<div class="ceb-infor">
-							<h3>{{row[director_first_name]}} {{row[director_last_name]}}</h3>
+							<h3 style="color: white;">{{row[director_first_name]}} {{row[director_last_name]}}</h3>
 							<span>director</span>
 						</div>
 					</div>
@@ -57,7 +57,19 @@
 					</div>
 					{% endfor %}
 				</div>
-
+				<div class="topbar-filter" style="padding-left: 520px;">
+					<label>Page {{page_no}} of {{num_of_pages}}:</label>
+					<select name="page" id="pagination">
+						{% for page in pages %}
+						{% if page == page_no %}
+							{% set addSelectedAttribute = "selected" %}
+						{% else %}
+							{% set addSelectedAttribute = "" %}
+						{% endif %}
+						<option value="{{page}}" {{addSelectedAttribute}}>{{page}}</option>
+						{% endfor %}
+					</select>
+				</div>
                 {% else %}
 				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
 					Please fill the form on the right
@@ -68,7 +80,8 @@
 				<div class="sidebar">
 					<div class="searh-form">
 						<h4 class="sb-title">Search</h4>
-						<form class="form-style-1 celebrity-form" action="" method="post">
+						<form class="form-style-1 celebrity-form" action="" method="get">
+							<input type="hidden" name="fact" value="{{fact}}">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Budget</label>

@@ -4,7 +4,7 @@
 			<div class="col-md-8 col-sm-12 col-xs-12">
                 {% if is_form_sent %}
 				<div class="topbar-filter">
-					<p style="padding-right: 0px;">Found <span>{{ res|length }} results</span>{{search_query}}</p>
+					<p style="padding-right: 0px;">Found <span>{{ num_of_res }} results</span>{{search_query}}</p>
 				</div>
 				<div class="flex-wrap-movielist">
 					{% for row in res if not (res[first_name] is none or res[last_name] is none
@@ -18,11 +18,24 @@
                         {% endif %}
                         <img src={{picture}} alt="" width="170" height="225">
                         <div class="mv-item-infor">
-                            <h6>{{row[first_name]}} {{row[last_name]}}</h6>
+                            <h6 style="color:white;">{{row[first_name]}} {{row[last_name]}}</h6>
                             <p class="rate">Number of awards: {{row[total_awards]}}<br>Number of movies: {{ row[movies_played] }}</p>
                         </div>
                     </div>
                     {% endfor %}
+				</div>
+				<div class="topbar-filter" style="padding-left: 430px;">
+					<label>Page {{page_no}} of {{num_of_pages}}:</label>
+					<select name="page" id="pagination">
+						{% for page in pages %}
+						{% if page == page_no %}
+							{% set addSelectedAttribute = "selected" %}
+						{% else %}
+							{% set addSelectedAttribute = "" %}
+						{% endif %}
+						<option value="{{page}}" {{addSelectedAttribute}}>{{page}}</option>
+						{% endfor %}
+					</select>
 				</div>
                 {% else %}
 				<p style="text-align:center; font-size: 1.5em; font-weight: bold;">
@@ -34,7 +47,8 @@
 				<div class="sidebar">
 					<div class="searh-form">
 						<h4 class="sb-title">Search</h4>
-						<form class="form-style-1" action="" method="post">
+						<form class="form-style-1" action="" method="get">
+							<input type="hidden" name="fact" value="{{fact}}">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>From Year</label>

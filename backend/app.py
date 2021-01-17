@@ -219,16 +219,15 @@ def fun_facts():
                                    search_query=search_query, page_no=page, num_of_pages=len(list_of_pages),
                                    pages=list_of_pages, num_of_res=num_of_res, fact=fact)
         elif fact == 'popular_directors':
-            # TODO add <br> every 18 chars in long movie/people names
             search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
-                    budget = request.form.get('budget')
+                    budget = request.args.get('budget')
                     if budget == '':
                         budget = '0'
                     budget = int(budget)
-                    num_of_actors = request.form.get('num_of_actors')
+                    num_of_actors = request.args.get('num_of_actors')
                     if num_of_actors == '':
                         num_of_actors = '0'
                     num_of_actors = int(num_of_actors)
@@ -241,23 +240,38 @@ def fun_facts():
             countries_movies = ["", " display:none;"]
             actors_awards = ["", " display:none;"]
             movies_with_actors_by_name = ["", " display:none;"]
+
+            # pagination
+            num_of_res = len(res)
+            page = request.args.get('page')
+            if type(page) is str:
+                page = int(page)
+            else:
+                page = 1
+            list_of_pages = range(1, math.ceil(num_of_res / NUM_OF_RESULTS_PER_PAGE) + 1)
+            first_result = (NUM_OF_RESULTS_PER_PAGE * (page - 1))
+            last_result = NUM_OF_RESULTS_PER_PAGE * page
+            res = res[first_result:min(num_of_res, last_result)]
+
             return render_template('facts_popular_directors.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
                                    res=res, person_ID=0, director_first_name=1, director_last_name=2,
-                                   director_picture_URL=3, movie_ID = 4, title=5, num_of_actors=6, budget=7, total_budget=8, movie_poster=9,
-                                   movie_index=10, movie_max_index=11, search_query=search_query)
+                                   director_picture_URL=3, movie_ID=4, title=5, num_of_actors=6, budget=7,
+                                   total_budget=8, movie_poster=9, movie_index=10, movie_max_index=11,
+                                   search_query=search_query, fact=fact, page_no=page, num_of_pages=len(list_of_pages),
+                                   pages=list_of_pages, num_of_res=num_of_res)
         elif fact == 'countries_movies':
             search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
-                    budget = request.form.get('budget')
+                    budget = request.args.get('budget')
                     if budget == '':
                         budget = '0'
                     budget = int(budget)
-                    num_of_awards = request.form.get('num_of_awards')
+                    num_of_awards = request.args.get('num_of_awards')
                     if num_of_awards == '':
                         num_of_awards = '0'
                     num_of_awards = int(num_of_awards)
@@ -269,18 +283,32 @@ def fun_facts():
             countries_movies = [" selected", ""]
             actors_awards = ["", " display:none;"]
             movies_with_actors_by_name = ["", " display:none;"]
+
+            # pagination
+            num_of_res = len(res)
+            page = request.args.get('page')
+            if type(page) is str:
+                page = int(page)
+            else:
+                page = 1
+            list_of_pages = range(1, math.ceil(num_of_res / NUM_OF_RESULTS_PER_PAGE_2) + 1)
+            first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
+            last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
+            res = res[first_result:min(num_of_res, last_result)]
+
             return render_template('facts_countries_movies.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
                                    res=res, movie_poster=5, movie_ID=1, title=2, country=0, budget=3, awards=4,
-                                   search_query=search_query)
+                                   search_query=search_query, fact=fact, page_no=page, num_of_pages=len(list_of_pages),
+                                   pages=list_of_pages, num_of_res=num_of_res)
         elif fact == 'actors_awards':
             search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
-                    start_year = request.form.get('start_year')
+                    start_year = request.args.get('start_year')
                     search_query = f" - From {start_year}"
                     start_year = int(start_year)
                     res = db.actors_movies_awards_query(start_year)
@@ -290,19 +318,34 @@ def fun_facts():
             countries_movies = ["", " display:none;"]
             actors_awards = [" selected", ""]
             movies_with_actors_by_name = ["", " display:none;"]
+
+            # pagination
+            num_of_res = len(res)
+            page = request.args.get('page')
+            if type(page) is str:
+                page = int(page)
+            else:
+                page = 1
+            list_of_pages = range(1, math.ceil(num_of_res / NUM_OF_RESULTS_PER_PAGE_2) + 1)
+            first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
+            last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
+            res = res[first_result:min(num_of_res, last_result)]
+
             return render_template('facts_actors_awards.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
                                    res=res, first_name=1, last_name=2, movies_played=3,
-                                   total_awards=4, picture_URL=5, search_query=search_query)
+                                   total_awards=4, picture_URL=5, search_query=search_query,
+                                   fact=fact, page_no=page, num_of_pages=len(list_of_pages), pages=list_of_pages,
+                                   num_of_res=num_of_res)
         elif fact == 'movies_with_actors_by_name':
             search_query = ""
             if type(is_submitted) is str:
                 if is_submitted == 'submit':
                     is_form_sent = True
-                    exact_match = request.form.get('exact_match')
-                    string_to_search = request.form.get('string_to_search')
+                    exact_match = request.args.get('exact_match')
+                    string_to_search = request.args.get('string_to_search')
                     res = db.movies_actors_with_string_in_name_query(string_to_search, exact_match == "contains")
                     search_query = f" - {exact_match} \"{string_to_search}\""
             init = ["", " display:none;"]
@@ -311,12 +354,26 @@ def fun_facts():
             countries_movies = ["", " display:none;"]
             actors_awards = ["", " display:none;"]
             movies_with_actors_by_name = [" selected", ""]
+
+            # pagination
+            num_of_res = len(res)
+            page = request.args.get('page')
+            if type(page) is str:
+                page = int(page)
+            else:
+                page = 1
+            list_of_pages = range(1, math.ceil(num_of_res / NUM_OF_RESULTS_PER_PAGE_2) + 1)
+            first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
+            last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
+            res = res[first_result:min(num_of_res, last_result)]
+
             return render_template('movies_with_actors_by_name.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
                                    movies_with_actors_by_name=movies_with_actors_by_name, is_form_sent=is_form_sent,
                                    res=res, id = 0, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
-                                   search_query=search_query)
+                                   search_query=search_query, fact=fact, page_no=page, num_of_pages=len(list_of_pages),
+                                   pages=list_of_pages, num_of_res=num_of_res)
 
     return render_template('facts.html', selected=selected, display=display, init=init,
                            couples=couples, popular_directors=popular_directors,
