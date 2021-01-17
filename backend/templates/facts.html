@@ -188,13 +188,51 @@ $( "#choose_query" ).change(function() {
 });
 </script>
 <script type="text/javascript">
-	function validate_form() {
+	function validate_form_name() {
+		if (document.getElementById("the_name").value == "") {
+			alert("You must fill all fields");
+			return false;
+		}
+		return true;
+	}
+
+	function validate_form_awards() {
+		if (document.getElementById("start_year").value == "") {
+			alert("You must fill all fields");
+			return false;
+		}
+		return true;
+	}
+
+	function validate_form_countries() {
+		if (document.getElementById("budget").value == "" || document.getElementById("awards").value == "") {
+			alert("You must fill all fields");
+			return false;
+		}
+		return true;
+	}
+
+	function validate_form_popular() {
+		if (document.getElementById("budget").value == "" || document.getElementById("companies").value == "") {
+			alert("You must fill all fields");
+			return false;
+		}
+		return true;
+	}
+
+	function validate_form_couples() {
 		var num_of_selected_genres = $('#selected_genres option:selected').length;
 		if (num_of_selected_genres > 0) {
-			let vals = $('#selected_genres').val();
-			let values = vals.join(',');
-			document.getElementById("selected_genres_hidden").value = values;
-			return true;
+			if (document.getElementById("common_movies").value != "") {
+				let vals = $('#selected_genres').val();
+				let values = vals.join(',');
+				document.getElementById("selected_genres_hidden").value = values;
+				return true;
+			}
+			else {
+				alert("You must fill all fields");
+				return false;
+			}
 		}
 		alert('You must choose at least one genre');
 		return false;

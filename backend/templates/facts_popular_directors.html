@@ -80,16 +80,16 @@
 				<div class="sidebar">
 					<div class="searh-form">
 						<h4 class="sb-title">Search</h4>
-						<form class="form-style-1 celebrity-form" action="" method="get">
+						<form class="form-style-1 celebrity-form" action="" method="get" onsubmit="return validate_form_popular();">
 							<input type="hidden" name="fact" value="{{fact}}">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Budget</label>
-									<input type="text" name="budget" placeholder="Enter budget">
+									<input type="text" name="budget" id="budget" placeholder="Enter budget">
 								</div>
 								<div class="col-md-12 form-it">
 									<label>Number of production companies</label>
-									<input type="text" name="num_of_actors" placeholder="Enter a number">
+									<input type="text" name="num_of_actors" id="companies" placeholder="Enter a number">
 								</div>
 								<div class="col-md-12 ">
 									<input class="submit" type="submit" name="submit" value="submit">

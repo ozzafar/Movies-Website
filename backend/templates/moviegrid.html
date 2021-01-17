@@ -142,7 +142,7 @@
 								</div>
 								<div class="col-md-12 form-it">
 									<label>Movie title</label>
-									<input type="text" name="movie_title" placeholder="Enter keywords">
+									<input type="text" name="movie_title" id="movie_title" placeholder="Enter keywords">
 								</div>
 								<div class="col-md-12 form-it">
 									<label>Genres</label>
@@ -175,10 +175,10 @@
 									<label>Release Year</label>
 									<div class="row">
 										<div class="col-md-6">
-											<input type="text" name="from_year" placeholder="From">
+											<input type="text" name="from_year" id="from_year" placeholder="From">
 										</div>
 										<div class="col-md-6">
-											<input type="text" name="to_year" placeholder="To">
+											<input type="text" name="to_year" id="to_year" placeholder="To">
 										</div>
 									</div>
 								</div>
@@ -219,10 +219,16 @@
 	function validate_form() {
 		var num_of_selected_genres = $('#selected_genres option:selected').length;
 		if (num_of_selected_genres > 0) {
-			let vals = $('#selected_genres').val();
-			let values = vals.join(',');
-			document.getElementById("selected_genres_hidden").value = values;
-			return true;
+			if (document.getElementById("movie_title").value != "" && document.getElementById("from_year").value != "" && document.getElementById("to_year").value != "") {
+				let vals = $('#selected_genres').val();
+				let values = vals.join(',');
+				document.getElementById("selected_genres_hidden").value = values;
+				return true;
+			}
+			else {
+				alert("You must fill all fields");
+				return false;
+			}
 		}
 		alert('You must choose at least one genre');
 		return false;

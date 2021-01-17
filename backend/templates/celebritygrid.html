@@ -147,7 +147,7 @@
 				<div class="sidebar">
 						<div class="searh-form">
 						<h4 class="sb-title">Search popular actors</h4>
-						<form class="form-style-1 celebrity-form" action="" method="get">
+						<form class="form-style-1 celebrity-form" action="" method="get" onsubmit="return validate_form();">
 							<div class="row">
 								<div class="col-md-12 form-it">
 									<label>Minimum rating</label>
@@ -168,10 +168,10 @@
 									<label>Release Year</label>
 									<div class="row">
 										<div class="col-md-6">
-											<input type="text" name="from_year" placeholder="From">
+											<input type="text" name="from_year" id="from_year" placeholder="From">
 										</div>
 										<div class="col-md-6">
-											<input type="text" name="to_year" placeholder="To">
+											<input type="text" name="to_year" id="to_year" placeholder="To">
 										</div>
 									</div>
 								</div>
@@ -209,6 +209,15 @@
 <script src="static/js/plugins.js"></script>
 <script src="static/js/plugins2.js"></script>
 <script src="static/js/custom.js"></script>
+<script type="text/javascript">
+	function validate_form() {
+		if (document.getElementById("from_year").value == "" || document.getElementById("to_year").value == "") {
+			alert("You must fill all fields");
+			return false;
+		}
+		return true;
+	}
+</script>
 <script type="text/javascript">
 	$("#pagination").change(function () {
 		let pageURL = window.location.href;

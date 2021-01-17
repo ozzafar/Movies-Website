@@ -57,7 +57,7 @@
 				<div class="sidebar">
 						<div class="searh-form">
 						<h4 class="sb-title">Search</h4>
-						<form class="form-style-1 celebrity-form" action="" method="get">
+						<form class="form-style-1 celebrity-form" action="" method="get" onsubmit="return validate_form_name();">
 							<input type="hidden" name="fact" value="{{fact}}">
 							<div class="row">
                                 <div class="col-md-12 form-it">
@@ -69,7 +69,7 @@
                                 </div>
 								<div class="col-md-12 form-it">
 									<label>String to search</label>
-									<input type="text" name="string_to_search" placeholder="Enter keywords">
+									<input type="text" name="string_to_search" id="the_name" placeholder="Enter keywords">
 								</div>
 								<div class="col-md-12 ">
 									<input class="submit" type="submit" name="submit" value="submit">
