@@ -392,7 +392,7 @@ def celebritygrid():
 
     user_search = ''
     if type(is_submitted) is str:
-        if is_submitted == 'submit': # TODO delete this if
+        if is_submitted == 'submit':
             minimum_rating = request.args.get('minimum_rating')
             start_year = request.args.get('from_year')
             end_year = request.args.get('to_year')

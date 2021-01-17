@@ -6,7 +6,6 @@ def query_to_index_movie(db, user_genres, movie_length, release):
     genres, min_len, max_len, start_year, end_year = parse_index_movie(user_genres, movie_length, release)
     recommended_movies_data = db.recommendations_query(genres, min_len, max_len, start_year, end_year)
     indexed_movie_arr = []
-    recommended_movies_data.append([None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]) # TODO delete
 
     for movie in recommended_movies_data:
         if movie[1] is None or movie[2] is None or movie[5] is None or movie[0] is None:
