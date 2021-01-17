@@ -1,9 +1,10 @@
-from backend.config import *
+from config import *
 from mysql.connector import errorcode
 import mysql.connector
 
 """ This class has some duplicate-code of DBbackend.py because we 
 assume this repo should be executed independently """
+
 
 class DBAuxiliaryFuncs:
     # constructor
