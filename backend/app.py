@@ -232,7 +232,7 @@ def fun_facts():
                     if num_of_actors == '':
                         num_of_actors = '0'
                     num_of_actors = int(num_of_actors)
-                    search_query = f" - Budget: {budget}, Number of actors: {num_of_actors}"
+                    search_query = f" - Budget: {budget}, Number of production companies: {num_of_actors}"
                     res = db.directors_movies_budget_query(budget, num_of_actors)
 # director_picture director_first_name director_last_name movie_ID movie_poster title num_of_actors total_budget
             init = ["", " display:none;"]

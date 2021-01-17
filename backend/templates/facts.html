@@ -128,11 +128,11 @@
 						</p>
 						<p id="popular_directors" style="color: black; margin: 0;{{popular_directors[display]}}">
                             Popular Directors Query<br><br>
-                            Given budget (X) and number of actors (Y) the query returns names of directors which the total budget of movies they did with Y actors or more is at least X, and the total budget. For each director in the list we also present the movies he directed with more than X actors and their budget.
+                            Given budget (X) and number of production companies (Y) the query returns the total budget and names of directors which the total budget of movies they did, while each movie in the list was produced by at least Y production companies, is at least X. For each director in the list we also present the movies he directed with more than X production companies and their budget.
 						</p>
 						<p id="countries_movies" style="color: black; margin: 0;{{countries_movies[display]}}">
 							Countries-Movies Query <br><br>
-                            Given budget (X) and number of movie awards (Y) the query returns country-movie couples which the movie was filmed in this country, it’s budget was more than X and won at least Y awards.
+                            Given budget (X) and number of movie awards (Y) the query returns country-movie couples which the movie was filmed in this country, it’s budget was more than X and won at least Y awards. For each country the query returns at most 15 movies. The movies are selected by the number of awards they won and their budget.
 						</p>
                         <p id="actors_awards" style="color: black; margin: 0;{{actors_awards[display]}}">
 							Actors-Awards Query<br><br>
