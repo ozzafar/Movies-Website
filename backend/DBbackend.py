@@ -115,7 +115,8 @@ class DBbackend:
             SELECT person_ID, first_name, last_name, title, num_of_companies, budget, picture_URL, poster_URL,
             movie_ID, 
             SUM(budget) OVER w total_budget,
-            ROW_NUMBER() OVER(PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC) movie_index,
+            ROW_NUMBER() OVER(PARTITION BY person_ID, first_name, last_name, picture_URL ORDER BY budget DESC) 
+                movie_index,
             COUNT(*) OVER w max_index
             FROM Movie_numOfCompanies_Director mcd
             WHERE mcd.num_of_companies >={companies_number}
@@ -142,7 +143,7 @@ class DBbackend:
             WHERE pc.prod_country_ID = mc.prod_country_ID AND mc.movie_ID = m.movie_ID
                         AND m.budget >= {movie_budget} AND m.awards >= {movie_awards}
             ) cmn
-        WHERE cmn.ranked_budget <= 10
+        WHERE cmn.ranked_budget <= 15
         ORDER BY cmn.country, cmn.awards DESC, cmn.budget DESC
         """
 
@@ -265,8 +266,6 @@ class DBbackend:
             WHERE mc.role ="Director" AND mc.movie_ID = m.movie_ID
             AND m.movie_ID=rm.movie_ID AND mc.person_ID = p.person_ID
         """
-
-
 
         self.execute_sql(query)
 
