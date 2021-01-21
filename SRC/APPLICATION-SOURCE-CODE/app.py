@@ -7,8 +7,6 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-db = DBbackend()
-
 
 def create_movie_body(page):
     is_search = False
@@ -16,6 +14,7 @@ def create_movie_body(page):
     body = ""
     search_query = ""
     movies = []
+    db = DBbackend()
 
     # search fields:
     if 'submit' in request.args.keys():
@@ -77,11 +76,13 @@ def create_movie_body(page):
                         <p class="rate"><i class="ion-android-star"></i><span>{rating}</span> /10</p>
                     </div>
                 </div>""")
+    db.close()
     return body, num_of_res, search_query
 
 
 @app.route('/moviesingle', methods=['GET'])
 def moviesingle():
+    db = DBbackend()
     movie_id = request.args.get('movie')
     movie = db.get_movie(movie_id)[0]
 
@@ -143,7 +144,7 @@ def moviesingle():
         for i in range(len(genres_db) - 1):
             genres = genres + genres_db[i] + ", "
         genres += genres_db[-1]
-
+    db.close()
     return render_template('moviesingle.html', name=name, year=year, runtime=runtime, plot=plot,
                            date=date, poster=poster, trailer=trailer,
                            genres=genres, director=director, actors=actors, rating=rating)
@@ -169,6 +170,7 @@ def moviegrid():
 
 @app.route('/facts', methods=['GET', 'POST'])
 def fun_facts():
+    db = DBbackend()
     fact = request.args.get('fact')
     init = [" selected", ""]
     couples = ["", " display:none;"]
@@ -211,6 +213,8 @@ def fun_facts():
             first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
             last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
             res = res[first_result:min(num_of_res, last_result)]
+            db.close()
+
             return render_template('facts_couples.html', selected=selected, display=display, init=init, couples=couples,
                                    popular_directors=popular_directors, countries_movies=countries_movies,
                                    actors_awards=actors_awards, movies_with_actors_by_name=movies_with_actors_by_name,
@@ -253,6 +257,7 @@ def fun_facts():
             first_result = (NUM_OF_RESULTS_PER_PAGE * (page - 1))
             last_result = NUM_OF_RESULTS_PER_PAGE * page
             res = res[first_result:min(num_of_res, last_result)]
+            db.close()
 
             return render_template('facts_popular_directors.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
@@ -296,6 +301,7 @@ def fun_facts():
             first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
             last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
             res = res[first_result:min(num_of_res, last_result)]
+            db.close()
 
             return render_template('facts_countries_movies.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
@@ -331,6 +337,7 @@ def fun_facts():
             first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
             last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
             res = res[first_result:min(num_of_res, last_result)]
+            db.close()
 
             return render_template('facts_actors_awards.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
@@ -367,7 +374,7 @@ def fun_facts():
             first_result = (NUM_OF_RESULTS_PER_PAGE_2 * (page - 1))
             last_result = NUM_OF_RESULTS_PER_PAGE_2 * page
             res = res[first_result:min(num_of_res, last_result)]
-
+            db.close()
             return render_template('movies_with_actors_by_name.html', selected=selected, display=display, init=init,
                                    couples=couples, popular_directors=popular_directors,
                                    countries_movies=countries_movies, actors_awards=actors_awards,
@@ -375,7 +382,7 @@ def fun_facts():
                                    res=res, id = 0, title=1, num_of_actors=2, actors_string=3, poster_URL=4,
                                    search_query=search_query, fact=fact, page_no=page, num_of_pages=len(list_of_pages),
                                    pages=list_of_pages, num_of_res=num_of_res)
-
+    db.close()
     return render_template('facts.html', selected=selected, display=display, init=init,
                            couples=couples, popular_directors=popular_directors,
                            countries_movies=countries_movies, actors_awards=actors_awards,
@@ -385,7 +392,7 @@ def fun_facts():
 @app.route('/celebritygrid', methods=['GET', 'POST'])
 def celebritygrid():
 
-
+    db = DBbackend()
     # form
     is_submitted = request.args.get('submit')
     res = []
@@ -412,6 +419,7 @@ def celebritygrid():
     first_result = (NUM_OF_RESULTS_PER_PAGE*(page-1))
     last_result = NUM_OF_RESULTS_PER_PAGE*page
     res = res[first_result:min(len(res), last_result)]
+    db.close()
 
     return render_template('celebritygrid.html', res=res, user_search=user_search,
                            first_name=1, last_name=2, num_of_movies=4, picture_URL=5,
@@ -420,6 +428,7 @@ def celebritygrid():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
+    db = DBbackend()
     filename = ''
     css = ''
     body = ''
@@ -446,6 +455,7 @@ def index():
                     Found 0 movies
                     <br>
                     <a href="/">Click here to change your preferences</a></p>"""
+                db.close()
                 return render_template('index.html', body=bodyMor)
             else:
                 filename = 'slider2'
@@ -640,6 +650,7 @@ def index():
     js2 = html.unescape(js2)
     csspath = 'static/css/' + filename + '.css'
     jspath = 'static/js/' + filename + '.js'
+    db.close()
     return render_template('intro.html', csspath=csspath, css=css, body=body, jspath=jspath, js1=js1, js2=js2)
 
 
